@@ -34,6 +34,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 			const enum misc_slot_length length,
 			const u16 id, u8 slot_char1, u8 slot_char2,
 			u8 segment_group, u8 bus, u8 dev_func);
+int smbios_write_type11(unsigned long *current, int *handle);
 enum smbios_bmc_interface_type;
 int smbios_write_type38(unsigned long *current, int *handle,
 			const enum smbios_bmc_interface_type interface_type,
@@ -273,6 +274,7 @@ typedef enum {
 	SMBIOS_CACHE_INFORMATION = 7,
 	SMBIOS_PORT_CONNECTOR_INFORMATION = 8,
 	SMBIOS_SYSTEM_SLOTS = 9,
+	SMBIOS_ONBOARD_DEVICES_INFORMATION = 10,
 	SMBIOS_OEM_STRINGS = 11,
 	SMBIOS_EVENT_LOG = 15,
 	SMBIOS_PHYS_MEMORY_ARRAY = 16,
@@ -952,6 +954,13 @@ struct smbios_type9 {
 	u8 eos[2];
 } __packed;
 
+struct smbios_type10 {
+	struct smbios_header header;
+	u8 device_type_and_status;
+	u8 description_string;
+	u8 eos[2];
+} __packed;
+
 struct smbios_type11 {
 	struct smbios_header header;
 	u8 count;
@@ -1202,6 +1211,15 @@ typedef enum {
 } smbios_onboard_device_type;
 
 #define SMBIOS_DEVICE_TYPE_COUNT 10
+
+struct smbios_onboard_device {
+	smbios_onboard_device_type type;
+	uint8_t status;
+	const char *description;
+};
+
+int smbios_write_type10(unsigned long *current, int *handle,
+			const struct smbios_onboard_device *device);
 
 struct smbios_type41 {
 	struct smbios_header header;

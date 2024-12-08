@@ -233,6 +233,8 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	/* Disable register protection */
 	outb(CFG_9346_UNLOCK, io_base + CFG_9346);
 
+	outb(0x51, io_base + 0x55); // I added it here because why not?
+
 	/* Set MAC address: only 4-byte write accesses allowed */
 	outl(mac[4] | mac[5] << 8, io_base + 4);
 	inl(io_base + 4);
@@ -357,6 +359,9 @@ static void r8168_init(struct device *dev)
 	struct drivers_net_config *config = dev->chip_info;
 	if (CONFIG(PCIEXP_ASPM) && config->enable_aspm_l1_2)
 		enable_aspm_l1_2(io_base);
+
+	printk(BIOS_INFO, "betel: r8168_init: io_base 0x%x,subdev 0x%x, subven 0x%x, dev 0x%x, ven 0x%x \n",
+		(u16)nic_res->base, dev->subsystem_device, dev->subsystem_vendor, dev->device, dev->vendor);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)

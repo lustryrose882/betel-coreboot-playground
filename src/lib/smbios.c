@@ -674,7 +674,23 @@ int smbios_write_type9(unsigned long *current, int *handle,
 	return len;
 }
 
-static int smbios_write_type11(unsigned long *current, int *handle)
+int smbios_write_type10(unsigned long *current, int *handle,
+				const struct smbios_onboard_device *device)
+{
+	struct smbios_type10 *t = smbios_carve_table(*current, SMBIOS_ONBOARD_DEVICES_INFORMATION, // I stole the protocol here in the smbios datasheet
+						     sizeof(*t), *handle);
+
+	t->device_type_and_status = device->type | (device->status << 7); // According to bit 7 it makes enabled or disabled
+
+	t->description_string = smbios_add_string(t->eos, device->description); // this is string, dmidecode told me so.
+
+	const int len = smbios_full_table_len(&t->header, t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
+int smbios_write_type11(unsigned long *current, int *handle)
 {
 	struct device *dev;
 	struct smbios_type11 *t = smbios_carve_table(*current, SMBIOS_OEM_STRINGS,
@@ -1263,7 +1279,10 @@ unsigned long smbios_write_tables(unsigned long current)
 		update_max(len, max_struct_size, smbios_write_type4(&current, handle++));
 		len += smbios_write_type7_cache_parameters(&current, &handle, &max_struct_size, type4);
 	}
-	update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
+
+	// my computer doesn't like it here, and neither do I
+	//update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
+
 	if (CONFIG(ELOG))
 		update_max(len, max_struct_size,
 			elog_smbios_write_type15(&current, handle++));
