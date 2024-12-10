@@ -1280,7 +1280,7 @@ unsigned long smbios_write_tables(unsigned long current)
 		len += smbios_write_type7_cache_parameters(&current, &handle, &max_struct_size, type4);
 	}
 
-	// my computer doesn't like it here, and neither do I
+	// p8h61-m-lx3plus-r2.0 specific: my computer doesn't like it here, and neither do I
 	//update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
 
 	if (CONFIG(ELOG))

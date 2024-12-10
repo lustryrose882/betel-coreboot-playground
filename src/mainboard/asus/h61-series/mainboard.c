@@ -4,6 +4,7 @@
 #include <drivers/intel/gma/int15.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
 #include <uuid.h>
+#include <pc80/i8254.h>
 
 struct smbios_onboard_device ethernet_device = {
 	.type = SMBIOS_DEVICE_TYPE_ETHERNET,
@@ -51,7 +52,7 @@ static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long 
 static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
 	t->count = smbios_add_string(t->eos,"08606E7B0B7D"); // DO NOT STEAL MY MAC ADDRESS
-	t->count = smbios_add_string(t->eos,"To Be Filled By O.E.M.");
+	t->count = smbios_add_string(t->eos,TBF);
 }
 
 void smbios_system_set_uuid(u8 *const uuid)
@@ -79,7 +80,7 @@ static void mainboard_enable(struct device *dev)
 
 static void mainboard_final(void *chip_info)
 {
-
+	beep(1500, 100);
 }
 
 struct chip_operations mainboard_ops = {

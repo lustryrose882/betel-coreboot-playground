@@ -26,20 +26,370 @@
 #define NIC_TIMEOUT		1000
 
 #define CMD_REG			0x37
-#define  CMD_REG_RESET		0x10
+#define CMD_REG_RESET		0x10
 #define CMD_LED0_LED1		0x18
 #define CMD_LED_FEATURE		0x94
 #define CMD_LEDSEL0		0x18
 #define CMD_LEDSEL2		0x84
 
 #define CFG_9346		0x50
-#define  CFG_9346_LOCK		0x00
-#define  CFG_9346_UNLOCK	0xc0
+#define CFG_9346_LOCK		0x00
+#define CFG_9346_UNLOCK		0xc0
 #define CMD_REG_ASPM		0xb0
 #define ASPM_L1_2_MASK		0xe059000f
 
 #define DEVICE_INDEX_BYTE	12
 #define MAX_DEVICE_SUPPORT	10
+
+#define RTL_W8(tp, reg, val8)		outb((val8), tp + (reg))
+#define RTL_W16(tp, reg, val16)		outw((val16), tp + (reg))
+#define RTL_W32(tp, reg, val32)		outl((val32), tp + (reg))
+#define RTL_R8(tp, reg)			inb(tp + (reg))
+#define RTL_R16(tp, reg)		inw(tp + (reg))
+#define RTL_R32(tp, reg)		inl(tp + (reg))
+
+enum rtl_registers {
+	MAC0		= 0,	/* Ethernet hardware address. */
+	MAC4		= 4,
+	MAR0		= 8,	/* Multicast filter. */
+	CounterAddrLow		= 0x10,
+	CounterAddrHigh		= 0x14,
+	TxDescStartAddrLow	= 0x20,
+	TxDescStartAddrHigh	= 0x24,
+	TxHDescStartAddrLow	= 0x28,
+	TxHDescStartAddrHigh	= 0x2c,
+	FLASH		= 0x30,
+	ERSR		= 0x36,
+	ChipCmd		= 0x37,
+	TxPoll		= 0x38,
+	IntrMask	= 0x3c,
+	IntrStatus	= 0x3e,
+
+	TxConfig	= 0x40,
+#define	TXCFG_AUTO_FIFO			(1 << 7)	/* 8111e-vl */
+#define	TXCFG_EMPTY			(1 << 11)	/* 8111e-vl */
+
+	RxConfig	= 0x44,
+#define	RX128_INT_EN			(1 << 15)	/* 8111c and later */
+#define	RX_MULTI_EN			(1 << 14)	/* 8111c only */
+#define	RXCFG_FIFO_SHIFT		13
+					/* No threshold before first PCI xfer */
+#define	RX_FIFO_THRESH			(7 << RXCFG_FIFO_SHIFT)
+#define	RX_EARLY_OFF			(1 << 11)
+#define	RX_PAUSE_SLOT_ON		(1 << 11)	/* 8125b and later */
+#define	RXCFG_DMA_SHIFT			8
+					/* Unlimited maximum PCI burst. */
+#define	RX_DMA_BURST			(7 << RXCFG_DMA_SHIFT)
+
+	Cfg9346		= 0x50,
+	Config0		= 0x51,
+	Config1		= 0x52,
+	Config2		= 0x53,
+#define PME_SIGNAL			(1 << 5)	/* 8168c and later */
+
+	Config3		= 0x54,
+	Config4		= 0x55,
+	Config5		= 0x56,
+	PHYAR		= 0x60,
+	PHYstatus	= 0x6c,
+	RxMaxSize	= 0xda,
+	CPlusCmd	= 0xe0,
+	IntrMitigate	= 0xe2,
+
+#define RTL_COALESCE_TX_USECS	GENMASK(15, 12)
+#define RTL_COALESCE_TX_FRAMES	GENMASK(11, 8)
+#define RTL_COALESCE_RX_USECS	GENMASK(7, 4)
+#define RTL_COALESCE_RX_FRAMES	GENMASK(3, 0)
+
+#define RTL_COALESCE_T_MAX	0x0fU
+#define RTL_COALESCE_FRAME_MAX	(RTL_COALESCE_T_MAX * 4)
+
+	RxDescAddrLow	= 0xe4,
+	RxDescAddrHigh	= 0xe8,
+	EarlyTxThres	= 0xec,	/* 8169. Unit of 32 bytes. */
+
+#define NoEarlyTx	0x3f	/* Max value : no early transmit. */
+
+	MaxTxPacketSize	= 0xec,	/* 8101/8168. Unit of 128 bytes. */
+
+#define TxPacketMax	(8064 >> 7)
+#define EarlySize	0x27
+
+	FuncEvent	= 0xf0,
+	FuncEventMask	= 0xf4,
+	FuncPresetState	= 0xf8,
+	IBCR0           = 0xf8,
+	IBCR2           = 0xf9,
+	IBIMR0          = 0xfa,
+	IBISR0          = 0xfb,
+	FuncForceEvent	= 0xfc,
+	MAC0_BKP	= 0x19e0,
+};
+
+enum rtl8168_registers {
+	LED_CTRL		= 0x18,
+	LED_FREQ		= 0x1a,
+	EEE_LED			= 0x1b,
+	ERIDR			= 0x70,
+	ERIAR			= 0x74,
+#define ERIAR_FLAG			0x80000000
+#define ERIAR_WRITE_CMD			0x80000000
+#define ERIAR_READ_CMD			0x00000000
+#define ERIAR_ADDR_BYTE_ALIGN		4
+#define ERIAR_TYPE_SHIFT		16
+#define ERIAR_EXGMAC			(0x00 << ERIAR_TYPE_SHIFT)
+#define ERIAR_MSIX			(0x01 << ERIAR_TYPE_SHIFT)
+#define ERIAR_ASF			(0x02 << ERIAR_TYPE_SHIFT)
+#define ERIAR_OOB			(0x02 << ERIAR_TYPE_SHIFT)
+#define ERIAR_MASK_SHIFT		12
+#define ERIAR_MASK_0001			(0x1 << ERIAR_MASK_SHIFT)
+#define ERIAR_MASK_0011			(0x3 << ERIAR_MASK_SHIFT)
+#define ERIAR_MASK_0100			(0x4 << ERIAR_MASK_SHIFT)
+#define ERIAR_MASK_0101			(0x5 << ERIAR_MASK_SHIFT)
+#define ERIAR_MASK_1111			(0xf << ERIAR_MASK_SHIFT)
+	EPHY_RXER_NUM		= 0x7c,
+	OCPDR			= 0xb0,	/* OCP GPHY access */
+#define OCPDR_WRITE_CMD			0x80000000
+#define OCPDR_READ_CMD			0x00000000
+#define OCPDR_REG_MASK			0x7f
+#define OCPDR_GPHY_REG_SHIFT		16
+#define OCPDR_DATA_MASK			0xffff
+	OCPAR			= 0xb4,
+#define OCPAR_FLAG			0x80000000
+#define OCPAR_GPHY_WRITE_CMD		0x8000f060
+#define OCPAR_GPHY_READ_CMD		0x0000f060
+	GPHY_OCP		= 0xb8,
+	RDSAR1			= 0xd0,	/* 8168c only. Undocumented on 8168dp */
+	MISC			= 0xf0,	/* 8168e only. */
+#define TXPLA_RST			(1 << 29)
+#define DISABLE_LAN_EN			(1 << 23) /* Enable GPIO pin */
+#define PWM_EN				(1 << 22)
+#define RXDV_GATED_EN			(1 << 19)
+#define EARLY_TALLY_EN			(1 << 16)
+};
+
+enum mac_version {
+	RTL_GIGA_MAC_VER_02,
+	RTL_GIGA_MAC_VER_03,
+	RTL_GIGA_MAC_VER_04,
+	RTL_GIGA_MAC_VER_05,
+	RTL_GIGA_MAC_VER_06,
+	RTL_GIGA_MAC_VER_07,
+	RTL_GIGA_MAC_VER_08,
+	RTL_GIGA_MAC_VER_09,
+	RTL_GIGA_MAC_VER_10,
+	RTL_GIGA_MAC_VER_11,
+	RTL_GIGA_MAC_VER_14,
+	RTL_GIGA_MAC_VER_17,
+	RTL_GIGA_MAC_VER_18,
+	RTL_GIGA_MAC_VER_19,
+	RTL_GIGA_MAC_VER_20,
+	RTL_GIGA_MAC_VER_21,
+	RTL_GIGA_MAC_VER_22,
+	RTL_GIGA_MAC_VER_23,
+	RTL_GIGA_MAC_VER_24,
+	RTL_GIGA_MAC_VER_25,
+	RTL_GIGA_MAC_VER_26,
+	RTL_GIGA_MAC_VER_28,
+	RTL_GIGA_MAC_VER_29,
+	RTL_GIGA_MAC_VER_30,
+	RTL_GIGA_MAC_VER_31,
+	RTL_GIGA_MAC_VER_32,
+	RTL_GIGA_MAC_VER_33,
+	RTL_GIGA_MAC_VER_34,
+	RTL_GIGA_MAC_VER_35,
+	RTL_GIGA_MAC_VER_36,
+	RTL_GIGA_MAC_VER_37,
+	RTL_GIGA_MAC_VER_38,
+	RTL_GIGA_MAC_VER_39,
+	RTL_GIGA_MAC_VER_40,
+	RTL_GIGA_MAC_VER_42,
+	RTL_GIGA_MAC_VER_43,
+	RTL_GIGA_MAC_VER_44,
+	RTL_GIGA_MAC_VER_46,
+	RTL_GIGA_MAC_VER_48,
+	RTL_GIGA_MAC_VER_51,
+	RTL_GIGA_MAC_VER_52,
+	RTL_GIGA_MAC_VER_53,
+	RTL_GIGA_MAC_VER_61,
+	RTL_GIGA_MAC_VER_63,
+	RTL_GIGA_MAC_VER_65,
+	RTL_GIGA_MAC_VER_66,
+	RTL_GIGA_MAC_NONE
+};
+
+static void _rtl_eri_write(u16 io_base, int addr, u32 mask,
+			   u32 val, int type)
+{
+	u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
+
+	RTL_W32(io_base, ERIDR, val);
+	RTL_W32(io_base, ERIAR, cmd);
+
+	udelay(100);
+}
+
+static void rtl_eri_write(u16 io_base, int addr, u32 mask,
+			  u32 val)
+{
+	_rtl_eri_write(io_base, addr, mask, val, ERIAR_EXGMAC);
+}
+
+static u32 _rtl_eri_read(u16 io_base, int addr, int type)
+{
+	u32 cmd = ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr;
+
+	RTL_W32(io_base, ERIAR, cmd);
+	return RTL_R32(io_base, ERIDR);
+}
+
+static u32 rtl_eri_read(u16 io_base, int addr)
+{
+	return _rtl_eri_read(io_base, addr, ERIAR_EXGMAC);
+}
+
+static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
+{
+
+	static const struct rtl_mac_info {
+		u16 mask;
+		u16 val;
+		enum mac_version ver;
+	} mac_info[] = {
+		/* 8126A family. */
+		{ 0x7cf, 0x64a,	RTL_GIGA_MAC_VER_66 },
+		{ 0x7cf, 0x649,	RTL_GIGA_MAC_VER_65 },
+
+		/* 8125B family. */
+		{ 0x7cf, 0x641,	RTL_GIGA_MAC_VER_63 },
+
+		/* 8125A family. */
+		{ 0x7cf, 0x609,	RTL_GIGA_MAC_VER_61 },
+		/* It seems only XID 609 made it to the mass market.
+		 * { 0x7cf, 0x608,	RTL_GIGA_MAC_VER_60 },
+		 * { 0x7c8, 0x608,	RTL_GIGA_MAC_VER_61 },
+		 */
+
+		/* RTL8117 */
+		{ 0x7cf, 0x54b,	RTL_GIGA_MAC_VER_53 },
+		{ 0x7cf, 0x54a,	RTL_GIGA_MAC_VER_52 },
+
+		/* 8168EP family. */
+		{ 0x7cf, 0x502,	RTL_GIGA_MAC_VER_51 },
+		/* It seems this chip version never made it to
+		 * the wild. Let's disable detection.
+		 * { 0x7cf, 0x501,      RTL_GIGA_MAC_VER_50 },
+		 * { 0x7cf, 0x500,      RTL_GIGA_MAC_VER_49 },
+		 */
+
+		/* 8168H family. */
+		{ 0x7cf, 0x541,	RTL_GIGA_MAC_VER_46 },
+		/* It seems this chip version never made it to
+		 * the wild. Let's disable detection.
+		 * { 0x7cf, 0x540,	RTL_GIGA_MAC_VER_45 },
+		 */
+		/* Realtek calls it RTL8168M, but it's handled like RTL8168H */
+		{ 0x7cf, 0x6c0,	RTL_GIGA_MAC_VER_46 },
+
+		/* 8168G family. */
+		{ 0x7cf, 0x5c8,	RTL_GIGA_MAC_VER_44 },
+		{ 0x7cf, 0x509,	RTL_GIGA_MAC_VER_42 },
+		/* It seems this chip version never made it to
+		 * the wild. Let's disable detection.
+		 * { 0x7cf, 0x4c1,	RTL_GIGA_MAC_VER_41 },
+		 */
+		{ 0x7cf, 0x4c0,	RTL_GIGA_MAC_VER_40 },
+
+		/* 8168F family. */
+		{ 0x7c8, 0x488,	RTL_GIGA_MAC_VER_38 },
+		{ 0x7cf, 0x481,	RTL_GIGA_MAC_VER_36 },
+		{ 0x7cf, 0x480,	RTL_GIGA_MAC_VER_35 },
+
+		/* 8168E family. */
+		{ 0x7c8, 0x2c8,	RTL_GIGA_MAC_VER_34 },
+		{ 0x7cf, 0x2c1,	RTL_GIGA_MAC_VER_32 },
+		{ 0x7c8, 0x2c0,	RTL_GIGA_MAC_VER_33 },
+
+		/* 8168D family. */
+		{ 0x7cf, 0x281,	RTL_GIGA_MAC_VER_25 },
+		{ 0x7c8, 0x280,	RTL_GIGA_MAC_VER_26 },
+
+		/* 8168DP family. */
+		/* It seems this early RTL8168dp version never made it to
+		 * the wild. Support has been removed.
+		 * { 0x7cf, 0x288,      RTL_GIGA_MAC_VER_27 },
+		 */
+		{ 0x7cf, 0x28a,	RTL_GIGA_MAC_VER_28 },
+		{ 0x7cf, 0x28b,	RTL_GIGA_MAC_VER_31 },
+
+		/* 8168C family. */
+		{ 0x7cf, 0x3c9,	RTL_GIGA_MAC_VER_23 },
+		{ 0x7cf, 0x3c8,	RTL_GIGA_MAC_VER_18 },
+		{ 0x7c8, 0x3c8,	RTL_GIGA_MAC_VER_24 },
+		{ 0x7cf, 0x3c0,	RTL_GIGA_MAC_VER_19 },
+		{ 0x7cf, 0x3c2,	RTL_GIGA_MAC_VER_20 },
+		{ 0x7cf, 0x3c3,	RTL_GIGA_MAC_VER_21 },
+		{ 0x7c8, 0x3c0,	RTL_GIGA_MAC_VER_22 },
+
+		/* 8168B family. */
+		{ 0x7c8, 0x380,	RTL_GIGA_MAC_VER_17 },
+		/* This one is very old and rare, let's see if anybody complains.
+		 * { 0x7c8, 0x300,	RTL_GIGA_MAC_VER_11 },
+		 */
+
+		/* 8101 family. */
+		{ 0x7c8, 0x448,	RTL_GIGA_MAC_VER_39 },
+		{ 0x7c8, 0x440,	RTL_GIGA_MAC_VER_37 },
+		{ 0x7cf, 0x409,	RTL_GIGA_MAC_VER_29 },
+		{ 0x7c8, 0x408,	RTL_GIGA_MAC_VER_30 },
+		{ 0x7cf, 0x349,	RTL_GIGA_MAC_VER_08 },
+		{ 0x7cf, 0x249,	RTL_GIGA_MAC_VER_08 },
+		{ 0x7cf, 0x348,	RTL_GIGA_MAC_VER_07 },
+		{ 0x7cf, 0x248,	RTL_GIGA_MAC_VER_07 },
+		{ 0x7cf, 0x240,	RTL_GIGA_MAC_VER_14 },
+		{ 0x7c8, 0x348,	RTL_GIGA_MAC_VER_09 },
+		{ 0x7c8, 0x248,	RTL_GIGA_MAC_VER_09 },
+		{ 0x7c8, 0x340,	RTL_GIGA_MAC_VER_10 },
+
+		/* 8110 family. */
+		{ 0xfc8, 0x980,	RTL_GIGA_MAC_VER_06 },
+		{ 0xfc8, 0x180,	RTL_GIGA_MAC_VER_05 },
+		{ 0xfc8, 0x100,	RTL_GIGA_MAC_VER_04 },
+		{ 0xfc8, 0x040,	RTL_GIGA_MAC_VER_03 },
+		{ 0xfc8, 0x008,	RTL_GIGA_MAC_VER_02 },
+
+		/* Catch-all */
+		{ 0x000, 0x000,	RTL_GIGA_MAC_NONE   }
+	};
+	const struct rtl_mac_info *p = mac_info;
+	enum mac_version ver;
+
+	while ((xid & p->mask) != p->val)
+		p++;
+	ver = p->ver;
+
+	if (ver != RTL_GIGA_MAC_NONE && !gmii) {
+		if (ver == RTL_GIGA_MAC_VER_42)
+			ver = RTL_GIGA_MAC_VER_43;
+		else if (ver == RTL_GIGA_MAC_VER_46)
+			ver = RTL_GIGA_MAC_VER_48;
+	}
+
+	return ver;
+}
+
+static bool rtl_is_8168evl_up(enum mac_version ver)
+{
+	return ver >= RTL_GIGA_MAC_VER_34 &&
+	       ver != RTL_GIGA_MAC_VER_39 &&
+	       ver <= RTL_GIGA_MAC_VER_53;
+}
+
+static bool rtl_is_8125(enum mac_version ver)
+{
+	return ver >= RTL_GIGA_MAC_VER_61;
+}
+
 /**
  * search: Find first instance of string in a given region
  * @param p       string to find
@@ -199,6 +549,9 @@ static void get_mac_address(u8 *macaddr, const u8 *strbuf)
 
 static void program_mac_address(struct device *dev, u16 io_base)
 {
+	enum mac_version chipset;
+	u32 txconfig;
+	u16 xid;
 	u8 macstrbuf[MACLEN] = { 0 };
 	int i = 0;
 	/* Default MAC Address of 00:E0:4C:00:C0:B0 */
@@ -215,12 +568,15 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	}
 	get_mac_address(mac, macstrbuf);
 
+	u32 mac_low = mac[0] | (mac[1] << 8) | (mac[2] << 16) | (mac[3] << 24);
+	u32 mac_high = mac[4] | (mac[5] << 8);
+
 	/* Reset NIC */
 	printk(BIOS_DEBUG, "r8168: Resetting NIC...");
-	outb(CMD_REG_RESET, io_base + CMD_REG);
+	RTL_W8(io_base, CMD_REG, CMD_REG_RESET);
 
 	/* Poll for reset, with 1sec timeout */
-	while (i < NIC_TIMEOUT && (inb(io_base + CMD_REG) & CMD_REG_RESET)) {
+	while (i < NIC_TIMEOUT && (RTL_R8(io_base, CMD_REG) & CMD_REG_RESET)) {
 		udelay(1000);
 		if (++i >= NIC_TIMEOUT)
 			printk(BIOS_ERR, "timeout waiting for nic to reset\n");
@@ -231,18 +587,43 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	printk(BIOS_DEBUG, "r8168: Programming MAC Address...");
 
 	/* Disable register protection */
-	outb(CFG_9346_UNLOCK, io_base + CFG_9346);
+	RTL_W8(io_base, CFG_9346, CFG_9346_UNLOCK);
 
-	outb(0x51, io_base + 0x55); // I added it here because why not?
+	txconfig = RTL_R32(io_base, TxConfig);
+	if (txconfig == ~0U)
+		printk(BIOS_ERR, "r8168: PCI read failed\n");
+
+	xid = (txconfig >> 20) & 0xfcf;
+
+	chipset = rtl8169_get_mac_version(xid, true); // TODO: add gmii bool as well
+
+	RTL_W8(io_base, Config4, 0x51); // p8h61-m-lx3plus-r2.0 specific: I added it here because why not?
 
 	/* Set MAC address: only 4-byte write accesses allowed */
-	outl(mac[4] | mac[5] << 8, io_base + 4);
-	inl(io_base + 4);
-	outl(mac[0] | mac[1] << 8 | mac[2] << 16 | mac[3] << 24,
-		io_base);
-	inl(io_base);
+	RTL_W32(io_base, MAC0, mac_low);
+	RTL_R32(io_base, MAC0);
+	RTL_W32(io_base, MAC4, mac_high);
+	RTL_R32(io_base, MAC4);
+
+	/*
+	 IMPORTANT: some NICs with a specific MAC version can't receive MAC address directly from MAC0.
+	 This means that it reads the ERIAR or MAC0_BKP side before the MAC0 side.
+	 This is why we can't get the the correct value.
+	*/
+	if (rtl_is_8168evl_up(chipset) && chipset != RTL_GIGA_MAC_VER_34) {
+		rtl_eri_write(io_base, 0xe0, ERIAR_MASK_1111, mac_low);
+		rtl_eri_read(io_base, 0xe0);
+		rtl_eri_write(io_base, 0xe4, ERIAR_MASK_1111, mac_high);
+		rtl_eri_read(io_base, 0xe4);
+	} else if (rtl_is_8125(chipset)) {
+		RTL_W32(io_base, MAC0_BKP, mac_low);
+		RTL_R32(io_base, MAC0_BKP);
+		RTL_W32(io_base, MAC0_BKP + 4, mac_high);
+		RTL_R32(io_base, MAC0_BKP + 4);
+	}
+
 	/* Lock config regs */
-	outb(CFG_9346_LOCK, io_base + CFG_9346);
+	RTL_W8(io_base, CFG_9346, CFG_9346_LOCK);
 
 	printk(BIOS_DEBUG, "done\n");
 }
@@ -252,13 +633,13 @@ static void enable_aspm_l1_2(u16 io_base)
 	printk(BIOS_INFO, "rtl: Enable ASPM L1.2\n");
 
 	/* Disable register protection */
-	outb(CFG_9346_UNLOCK, io_base + CFG_9346);
+	RTL_W8(io_base, CFG_9346, CFG_9346_UNLOCK);
 
 	/* Enable ASPM_L1.2 */
-	outl(ASPM_L1_2_MASK, io_base + CMD_REG_ASPM);
+	RTL_W32(io_base, CMD_REG_ASPM, ASPM_L1_2_MASK);
 
 	/* Lock config regs */
-	outb(CFG_9346_LOCK, io_base + CFG_9346);
+	RTL_W8(io_base, CFG_9346, CFG_9346_LOCK);
 }
 
 static void r8168_set_customized_led(struct device *dev, u16 io_base)
@@ -270,9 +651,9 @@ static void r8168_set_customized_led(struct device *dev, u16 io_base)
 
 	if (dev->device == PCI_DID_REALTEK_8125) {
 		/* Set LED global Feature register */
-		outb(config->led_feature, io_base + CMD_LED_FEATURE);
+		RTL_W8(io_base, CMD_LED_FEATURE, config->led_feature);
 		printk(BIOS_DEBUG, "r8125: read back LED global feature setting as 0x%x\n",
-		inb(io_base + CMD_LED_FEATURE));
+		RTL_R8(io_base, CMD_LED_FEATURE));
 
 		/*
 		 * Refer to RTL8125 datasheet 5.Customizable LED Configuration
@@ -299,14 +680,13 @@ static void r8168_set_customized_led(struct device *dev, u16 io_base)
 		 */
 
 		/* Set customized LED0 register */
-		outw(config->customized_led0, io_base + CMD_LEDSEL0);
+		RTL_W16(io_base, CMD_LEDSEL0, config->customized_led0);
 		printk(BIOS_DEBUG, "r8125: read back LED0 setting as 0x%x\n",
-			inw(io_base + CMD_LEDSEL0));
-
+			RTL_R16(io_base, CMD_LEDSEL0));
 		/* Set customized LED2 register */
-		outw(config->customized_led2, io_base + CMD_LEDSEL2);
+		RTL_W16(io_base, CMD_LEDSEL2, config->customized_led2);
 		printk(BIOS_DEBUG, "r8125: read back LED2 setting as 0x%x\n",
-			inw(io_base + CMD_LEDSEL2));
+			RTL_R16(io_base, CMD_LEDSEL2));
 	} else {
 		/* Read the customized LED setting from devicetree */
 		printk(BIOS_DEBUG, "r8168: Customized LED 0x%x\n", config->customized_leds);
@@ -327,9 +707,9 @@ static void r8168_set_customized_led(struct device *dev, u16 io_base)
 		 */
 
 		/* Set customized LED registers */
-		outw(config->customized_leds, io_base + CMD_LED0_LED1);
+		RTL_W16(io_base, CMD_LED0_LED1, config->customized_leds);
 		printk(BIOS_DEBUG, "r8168: read back LED setting as 0x%x\n",
-			inw(io_base + CMD_LED0_LED1));
+			RTL_R16(io_base, CMD_LED0_LED1));
 	}
 }
 
@@ -359,9 +739,6 @@ static void r8168_init(struct device *dev)
 	struct drivers_net_config *config = dev->chip_info;
 	if (CONFIG(PCIEXP_ASPM) && config->enable_aspm_l1_2)
 		enable_aspm_l1_2(io_base);
-
-	printk(BIOS_INFO, "betel: r8168_init: io_base 0x%x,subdev 0x%x, subven 0x%x, dev 0x%x, ven 0x%x \n",
-		(u16)nic_res->base, dev->subsystem_device, dev->subsystem_vendor, dev->device, dev->vendor);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)
