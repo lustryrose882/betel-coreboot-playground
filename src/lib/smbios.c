@@ -399,7 +399,18 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->bios_characteristics =
 		BIOS_CHARACTERISTICS_PCI_SUPPORTED |
 		BIOS_CHARACTERISTICS_SELECTABLE_BOOT |
-		BIOS_CHARACTERISTICS_UPGRADEABLE;
+		BIOS_CHARACTERISTICS_UPGRADEABLE | // this and below is p8h61-m-lx3plus-r2.0 specific
+		BIOS_CHARACTERISTICS_BOOT_FROM_CD |
+		BIOS_CHARACTERISTICS_SHADOW |
+		BIOS_CHARACTERISTICS_BIOS_SOCKETED |
+		BIOS_CHARACTERISTICS_EDD |
+		BIOS_CHARACTERISTICS_5_25_1200KB_FLOPPY |
+		BIOS_CHARACTERISTICS_3_5_720KB_FLOPPY |
+		BIOS_CHARACTERISTICS_3_5_2880KB_FLOPPY |
+		BIOS_CHARACTERISTICS_PRTSC_SERVICE |
+		BIOS_CHARACTERISTICS_8042_KEYBOARD |
+		BIOS_CHARACTERISTICS_SERIAL_SERVICE |
+		BIOS_CHARACTERISTICS_PRINTER_SERVICE;
 
 	if (CONFIG(CARDBUS_PLUGIN_SUPPORT))
 		t->bios_characteristics |= BIOS_CHARACTERISTICS_PC_CARD;
@@ -407,7 +418,13 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	if (CONFIG(HAVE_ACPI_TABLES))
 		t->bios_characteristics_ext1 = BIOS_EXT1_CHARACTERISTICS_ACPI;
 
-	t->bios_characteristics_ext2 = BIOS_EXT2_CHARACTERISTICS_TARGET;
+	// p8h61-m-lx3plus-r2.0 specific
+	t->bios_characteristics_ext1 = t->bios_characteristics_ext1 | BIOS_EXT1_CHARACTERISTICS_USB_LEGACY;
+
+	t->bios_characteristics_ext2 =
+			BIOS_EXT2_CHARACTERISTICS_TARGET |
+			BIOS_EXT2_CHARACTERISTICS_UEFI; // p8h61-m-lx3plus-r2.0 specific
+
 	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;

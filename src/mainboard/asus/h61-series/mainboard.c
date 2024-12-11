@@ -6,12 +6,14 @@
 #include <uuid.h>
 #include <pc80/i8254.h>
 
+// p8h61-m-lx3plus-r2.0 specific
 struct smbios_onboard_device ethernet_device = {
 	.type = SMBIOS_DEVICE_TYPE_ETHERNET,
 	.status = 1,  // Enabled or disabled???
 	.description = "Onboard Ethernet"
 };
 
+// p8h61-m-lx3plus-r2.0 specific
 static const struct port_information smbios_type8_info[] = { // I think it's exactly the same
 	{"PS/2 Mouse", CONN_NONE, "PS/2 Mouse", CONN_PS_2, TYPE_MOUSE_PORT},
 	{"PS/2 Keyboard", CONN_NONE, "PS/2 Keyboard", CONN_PS_2, TYPE_KEYBOARD_PORT},
@@ -32,6 +34,7 @@ static const struct port_information smbios_type8_info[] = { // I think it's exa
 	{"VGA", CONN_OTHER, "Not Specified", CONN_NONE, TYPE_OTHER_PORT}
 };
 
+// p8h61-m-lx3plus-r2.0 specific
 static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long *current)
 {
 	int len = 0;
@@ -49,12 +52,14 @@ static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long 
 	return len;
 }
 
+// p8h61-m-lx3plus-r2.0 specific
 static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
 	t->count = smbios_add_string(t->eos,"08606E7B0B7D"); // DO NOT STEAL MY MAC ADDRESS
 	t->count = smbios_add_string(t->eos,TBF);
 }
 
+// p8h61-m-lx3plus-r2.0 specific
 void smbios_system_set_uuid(u8 *const uuid)
 {
 	uint8_t system_uuid[UUID_LEN];
@@ -63,6 +68,19 @@ void smbios_system_set_uuid(u8 *const uuid)
 		memcpy(uuid, system_uuid, UUID_LEN);
 }
 
+// p8h61-m-lx3plus-r2.0 specific
+u8 smbios_mainboard_feature_flags(void)
+{
+	return SMBIOS_FEATURE_FLAGS_HOSTING_BOARD | SMBIOS_FEATURE_FLAGS_REPLACEABLE;
+}
+
+// p8h61-m-lx3plus-r2.0 specific
+const char *smbios_mainboard_location_in_chassis(void)
+{
+	return TBF;
+}
+
+// p8h61-m-lx3plus-r2.0 specific
 const char *smbios_system_sku(void)
 {
 	return "SKU";
@@ -70,6 +88,7 @@ const char *smbios_system_sku(void)
 
 static void mainboard_enable(struct device *dev)
 {
+	// both are p8h61-m-lx3plus-r2.0 specific
 	dev->ops->get_smbios_data = mainboard_smbios_data;
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 
@@ -80,6 +99,7 @@ static void mainboard_enable(struct device *dev)
 
 static void mainboard_final(void *chip_info)
 {
+	// p8h61-m-lx3plus-r2.0 specific
 	beep(1500, 100);
 }
 
