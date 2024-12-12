@@ -98,7 +98,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 
 	acpigen_write_dsm_uuid_arr(uuid_callbacks, ARRAY_SIZE(uuid_callbacks));
 /*
- *	PowerResource (BTRT, 0x05, 0x0000)
+ *	PowerResource (BTRT, 0, 0)
  *	{
  *		Method (_STA, 0, NotSerialized)
  *		{
@@ -117,16 +117,16 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
  *			Local0 = Acquire (\_SB.PCI0.CNMT, 1000)
  *			If ((Local0 == Zero))
  *			{
- *				BTRK (Zero)
+ *				\_SB.PCI0.BTRK (Zero)
  *				Sleep (RDLY)
- *				BTRK (One)
+ *				\_SB.PCI0.BTRK (One)
  *				Sleep (RDLY)
  *				Release (\_SB.PCI0.CNMT)
 			}
  *		}
  *	}
  */
-	acpigen_write_power_res("BTRT", 5, 0, NULL, 0);
+	acpigen_write_power_res("BTRT", 0, 0, NULL, 0);
 	{
 		acpigen_write_method("_STA", 0);
 		{
@@ -169,13 +169,13 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 
 				acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 				{
-					acpigen_emit_namestring("BTRK");
+					acpigen_emit_namestring("\\_SB.PCI0.BTRK");
 					acpigen_emit_byte(0);
 
 					acpigen_emit_ext_op(SLEEP_OP);
 					acpigen_emit_namestring("RDLY");
 
-					acpigen_emit_namestring("BTRK");
+					acpigen_emit_namestring("\\_SB.PCI0.BTRK");
 					acpigen_emit_byte(1);
 
 					acpigen_emit_ext_op(SLEEP_OP);
@@ -189,31 +189,6 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 		acpigen_pop_len();
 	}
 	acpigen_write_power_res_end();
-
-/*
- *	Method (BTRK, 1, Serialized)
- *	{
- *		If (Arg0 == 1)
- *		{
- *			STXS (reset_gpio)
- *		} Else {
- *			CTXS (reset_gpio)
- *		}
- *	}
- */
-	acpigen_write_method_serialized("BTRK", 1);
-	{
-		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
-		{
-			acpigen_soc_set_tx_gpio(reset_gpio);
-		}
-		acpigen_write_else();
-		{
-			acpigen_soc_clear_tx_gpio(reset_gpio);
-		}
-		acpigen_pop_len();
-	}
-	acpigen_pop_len();
 
 /*
  *	Name (_PRR, Package (0x01)
@@ -283,7 +258,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 	acpigen_pop_len();
 }
 
-void acpi_device_intel_bt_common(unsigned int enable_gpio)
+void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gpio)
 {
 	acpigen_write_scope("\\_SB.PCI0");
 /*
@@ -326,11 +301,54 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio)
  */
 	acpigen_write_method("GBTE", 0);
 	{
-		acpigen_emit_byte(RETURN_OP);
-		if (enable_gpio)
+		if (enable_gpio) {
 			acpigen_soc_get_tx_gpio(enable_gpio);
-		else
-			acpigen_emit_byte(0);
+			acpigen_write_return_op(LOCAL0_OP);
+		} else {
+			acpigen_write_return_integer(0);
+		}
+	}
+	acpigen_pop_len();
+
+/*
+ *	Method (BTRK, 1, Serialized)
+ *	{
+ *		If (Arg0 == 1)
+ *		{
+ *			STXS (reset_gpio)
+ *		} Else {
+ *			CTXS (reset_gpio)
+ *		}
+ *	}
+ */
+	acpigen_write_method_serialized("BTRK", 1);
+	{
+		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+		{
+			acpigen_soc_set_tx_gpio(reset_gpio);
+		}
+		acpigen_write_else();
+		{
+			acpigen_soc_clear_tx_gpio(reset_gpio);
+		}
+		acpigen_pop_len();
+	}
+	acpigen_pop_len();
+
+/*
+ *	Method (GBTR, 0, NotSerialized)
+ *	{
+ *		 Return (GTXS (reset_gpio))
+ *	}
+ */
+	acpigen_write_method("GBTR", 0);
+	{
+		if (reset_gpio) {
+			acpigen_soc_get_tx_gpio(reset_gpio);
+			acpigen_write_return_op(LOCAL0_OP);
+		} else {
+			acpigen_write_return_op(0);
+		}
 	}
 	acpigen_pop_len();
 

@@ -24,6 +24,8 @@ enum raminit_status {
 	RAMINIT_STATUS_SUCCESS = 0,
 	RAMINIT_STATUS_NO_MEMORY_INSTALLED,
 	RAMINIT_STATUS_UNSUPPORTED_MEMORY,
+	RAMINIT_STATUS_MPLL_INIT_FAILURE,
+	RAMINIT_STATUS_POLL_TIMEOUT,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -77,16 +79,33 @@ struct sysinfo {
 	uint32_t tCWL;
 	uint32_t tCMD;
 
+	uint32_t tREFI;
+	uint32_t tXP;
+
 	uint8_t lanes;			/* 8 or 9 */
 	uint8_t chanmap;
 	uint8_t dpc[NUM_CHANNELS];	/* DIMMs per channel */
 	uint8_t rankmap[NUM_CHANNELS];
 	uint8_t rank_mirrored[NUM_CHANNELS];
 	uint32_t channel_size_mb[NUM_CHANNELS];
+
+	uint8_t base_freq;		/* Memory base frequency, either 100 or 133 MHz */
+	uint32_t multiplier;
+	uint32_t mem_clock_mhz;
+	uint32_t mem_clock_fs;		/* Memory clock period in femtoseconds */
+	uint32_t qclkps;		/* Quadrature clock period in picoseconds */
 };
 
 void raminit_main(enum raminit_boot_mode bootmode);
 
 enum raminit_status collect_spd_info(struct sysinfo *ctrl);
+enum raminit_status initialise_mpll(struct sysinfo *ctrl);
+enum raminit_status convert_timings(struct sysinfo *ctrl);
+
+enum raminit_status wait_for_first_rcomp(void);
+
+uint8_t get_tCWL(uint32_t mem_clock_mhz);
+uint32_t get_tREFI(uint32_t mem_clock_mhz);
+uint32_t get_tXP(uint32_t mem_clock_mhz);
 
 #endif

@@ -202,7 +202,7 @@ void acpigen_write_PRT_pre_routed(const struct device *br)
 	uint32_t routed_dev_bitmap = 0;
 	char *entry_count;
 
-	if (!is_pci_bridge(br))
+	if (!dev_is_active_bridge(br))
 		return;
 
 	const char *acpi_scope = acpi_device_path(br);
@@ -224,6 +224,8 @@ void acpigen_write_PRT_pre_routed(const struct device *br)
 		uint8_t int_line = pci_read_config8(dev, PCI_INTERRUPT_LINE);
 		uint8_t int_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 		if ((int_pin > PCI_INT_MAX) || (int_pin < PCI_INT_A))
+			continue;
+		if (!int_line)
 			continue;
 
 		acpigen_write_PRT_GSI_entry(dev_num, int_pin - PCI_INT_A, int_line);
