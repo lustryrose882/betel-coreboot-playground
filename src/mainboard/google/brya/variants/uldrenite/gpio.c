@@ -30,8 +30,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A12, NONE),
 	/* A13 : GPP_A13 ==> SOC_BT_ON */
 	PAD_CFG_GPO_LOCK(GPP_A13, 1, LOCK_CONFIG),
-	/* A14 : USB_OC1# ==> NC */
-	PAD_NC(GPP_A14, NONE),
+	/* A14 : USB_OC1# */
+	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15 : USB_OC2# ==> NC */
 	PAD_NC(GPP_A15, NONE),
 	/* A16 : USB_OC3# ==> NC */
@@ -61,10 +61,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_IRQ_WAKE(GPP_B3, NONE, PWROK, LEVEL, INVERT),
 	/* B4  : PROC_GP3 ==> EN_PP3300_UCAM_X */
 	PAD_CFG_GPO_LOCK(GPP_B4, 1, LOCK_CONFIG),
-	/* B5  : GPP_B5 ==> NC */
-	PAD_NC(GPP_B5, NONE),
-	/* B6  : GPP_B6 ==> NC */
-	PAD_NC(GPP_B6, NONE),
+	/* B5  : GPP_B5 ==> ISH_I2C0_SCL */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B5, NONE, DEEP, NF1),
+	/* B6  : GPP_B6 ==> ISH_I2C0_SDA */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B6, NONE, DEEP, NF1),
 	/* B7  : GPP_B7 ==> NC */
 	PAD_NC_LOCK(GPP_B7, NONE, LOCK_CONFIG),
 	/* B8  : GPP_B8 ==> NC */

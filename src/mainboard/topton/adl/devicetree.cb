@@ -42,11 +42,8 @@ chip soc/intel/alderlake
 		end
 
 		device ref shared_sram on end
-
-		# Not working, resource conflict(?)
 		device ref sata on
 			register "sata_ports_enable" = "{
-				[0] = 1,
 				[1] = 1,
 			}"
 		end
@@ -120,6 +117,9 @@ chip soc/intel/alderlake
 			register "pch_hda_idisp_codec_enable"		= "true"
 			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
 			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
+		end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
 		end
 	end
 end
