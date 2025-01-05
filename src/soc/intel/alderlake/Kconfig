@@ -51,6 +51,7 @@ config SOC_INTEL_ALDERLAKE
 	select SOC_INTEL_COMMON_BLOCK_ACPI_LPIT
 	select SOC_INTEL_COMMON_BLOCK_ACPI_PEP
 	select SOC_INTEL_COMMON_BLOCK_ACPI_PEP_LPM_REQ
+	select SOC_INTEL_COMMON_BLOCK_ASPM
 	select SOC_INTEL_COMMON_BLOCK_CAR
 	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CNVI
@@ -84,6 +85,7 @@ config SOC_INTEL_ALDERLAKE
 	select SOC_INTEL_COMMON_PCH_CLIENT
 	select SOC_INTEL_COMMON_RESET
 	select SOC_INTEL_CRASHLOG if MAINBOARD_HAS_CHROMEOS
+	select HAS_INTEL_CPU_ROOT_PORTS
 	select SOC_INTEL_CSE_SEND_EOP_LATE if !BOARD_GOOGLE_BRYA_COMMON && !BOARD_GOOGLE_BROX_COMMON
 	select SOC_INTEL_CSE_SET_EOP
 	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
@@ -440,6 +442,14 @@ config DIMMS_PER_CHANNEL
 config MRC_CHANNEL_WIDTH
 	int
 	default 16
+
+config ENFORCE_MEM_CHANNEL_DISABLE
+	bool
+	default n
+	help
+	  Select this option to disable certain memory channels on demand. If
+	  selected, A function named mb_get_channel_disable_mask() must be
+	  implemented to return the bit map of memory channels to disable.
 
 config ALDERLAKE_ENABLE_SOC_WORKAROUND
 	bool

@@ -137,6 +137,25 @@ int google_chromeec_set_usb_pd_role(uint8_t port, enum usb_pd_control_role role)
 int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 					  uint16_t *current_max, uint16_t *voltage_max);
 
+/* Check if a USB Power Delivery (PD) charger is attached */
+bool google_chromeec_is_usb_pd_attached(void);
+
+/**
+ * Check if charger is present.
+ *
+ * @return		true: if the charger is present
+ *			false: if the charger is not present
+ */
+bool google_chromeec_is_charger_present(void);
+
+/**
+ * Check if barrel charger is present.
+ *
+ * @return		true: if the barrel charger is present
+ *			false: if the barrel charger is not present
+ */
+bool google_chromeec_is_barrel_charger_present(void);
+
 /*
  * Set max current and voltage of a dedicated charger.
  *
@@ -435,6 +454,14 @@ void google_chromeec_clear_ec_ap_idle(void);
  *			false: any of the above conditions is not true
  */
 bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
+
+/**
+ * Check if battery level is below critical threshold.
+ *
+ * @return		true: if the battery level is below critical threshold
+ *			false: any the above conditions is not true
+ */
+bool google_chromeec_is_below_critical_threshold(void);
 
 /**
  * Check if battery is present.

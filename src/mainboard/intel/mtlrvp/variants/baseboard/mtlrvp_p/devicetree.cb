@@ -212,7 +212,7 @@ chip soc/intel/meteorlake
 					[9] = {   0,    0,   0,   50, }
 				}"
 				## Fan options
-				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.fine_grained_control" = "true"
 				register "options.fan.step_size" = "2"
 				device generic 0 alias dptf_policy on end
 			end
@@ -443,7 +443,7 @@ chip soc/intel/meteorlake
 				register "link_freq[0]" = "560000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "0"
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
@@ -482,7 +482,7 @@ chip soc/intel/meteorlake
 				register "link_freq[0]" = "560000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "2"
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz

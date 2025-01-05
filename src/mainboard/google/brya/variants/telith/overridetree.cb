@@ -20,6 +20,13 @@ end
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
+	# Acoustic settings
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
+
 	# EMMC Tx CMD Delay
 	# Refer to EDS-Vol2-42.3.7.
 	# [14:8] steps of delay for DDR mode, each 125ps, range: 0 - 39.
@@ -328,7 +335,7 @@ chip soc/intel/alderlake
 				}"
 
 				## Fan options
-				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.fine_grained_control" = "true"
 				register "options.fan.step_size" = "2"
 				device generic 1 on
 					probe THERMAL_SOLUTION THERMAL_SOLUTION_15W
@@ -348,11 +355,11 @@ chip soc/intel/alderlake
 				# TCP0 (DP-1) for port C0
 				register "device[2].name" = ""DD02""
 				register "device[2].use_pld" = "true"
-				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
 				# TCP1 (DP-2) for port C1
 				register "device[3].name" = ""DD03""
 				register "device[3].use_pld" = "true"
-				register "device[3].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 				device generic 0 on end
 			end
 		end
@@ -385,20 +392,8 @@ chip soc/intel/alderlake
 				register "stop_off_delay_ms" = "25"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "enable_delay_ms" = "25"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 10 on end
-			end
-			chip drivers/generic/gpio_keys
-				register "name" = ""PENH""
-				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_F13)"
-				register "key.wake_gpe" = "GPE0_DW2_15"
-				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
-				register "key.wakeup_event_action" = "EV_ACT_ANY"
-				register "key.dev_name" = ""EJCT""
-				register "key.linux_code" = "SW_PEN_INSERTED"
-				register "key.linux_input_type" = "EV_SW"
-				register "key.label" = ""pen_eject""
-				device generic 0 on end
 			end
 		end
 		device ref i2c2 on
@@ -416,7 +411,7 @@ chip soc/intel/alderlake
 				register "link_freq[0]" = "560 * MHz"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
 				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
@@ -453,7 +448,7 @@ chip soc/intel/alderlake
 
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  # EN_PP2800_AFVDD
 
@@ -570,10 +565,10 @@ chip soc/intel/alderlake
 						device ref tcss_usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C1 (DB)""
+						register "desc" = ""USB3 Type-C Port C1 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 						device ref tcss_usb3_port1 on end
 					end
 				end
@@ -598,17 +593,17 @@ chip soc/intel/alderlake
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-C Port C1 (DB)""
+						register "desc" = ""USB2 Type-C Port C1 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, CENTER, ACPI_PLD_GROUP(3, 1))"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
@@ -637,7 +632,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-A Port A0 (MLB)""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, CENTER, ACPI_PLD_GROUP(3, 1))"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi

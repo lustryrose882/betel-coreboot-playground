@@ -256,7 +256,7 @@ chip soc/intel/meteorlake
 				}"
 
 				## Fan options
-				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.fine_grained_control" = "true"
 				register "options.fan.step_size" = "2"
 
 				device generic 0 alias dptf_policy on end
@@ -450,6 +450,15 @@ chip soc/intel/meteorlake
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 68 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B00_IRQ)"
+				register "generic.wake" = "GPE0_DW0_00"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
 		end
 		device ref i2c4 on
 			chip drivers/i2c/tpm
@@ -465,7 +474,7 @@ chip soc/intel/meteorlake
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Hi-556 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
@@ -514,7 +523,7 @@ chip soc/intel/meteorlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_B09" #EN_FCAM_PWR
@@ -582,7 +591,7 @@ chip soc/intel/meteorlake
 				register "compat_string" = ""google,cros-ec-spi""
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E10_IRQ)"
 				register "wake" = "GPE0_DW1_10"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C23)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
 				register "enable_delay_ms" = "3"
