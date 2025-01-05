@@ -13,6 +13,13 @@
 
 #include <superio/nuvoton/nct6776/acpi/superio.asl>
 
+#elif CONFIG(BOARD_ASUS_P8H61_M_LX3_R2_0)
+
+#define SUPERIO_DEV		SIO1 // ??
+#define SUPERIO_PNP_BASE	0x2e
+
+#include <superio/nuvoton/nct6779d/acpi/superio.asl>
+
 #else /* !BOARD_ASUS_P8H61_M_LX */
 #include <drivers/pc80/pc/ps2_controller.asl>
 #endif

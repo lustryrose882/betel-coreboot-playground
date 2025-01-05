@@ -100,7 +100,11 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 
 	PM1I,	32,	// System Wake Source - PM1 Index
 	GPEI,	32,	// GPE Wake Source
-
+        Offset (0xe1),
+	OSCC,	8, // PCIE OSC Control
+	NEXP,	8, // Native PCIE Setup Value
+	SBV1,	8, // USBV1?
+	SBV2,	8, // USBV2?
 	Offset (0xf5),
 	TPIQ,	 8,	// 0xf5 - trackpad IRQ value
 	,	32,

@@ -22,7 +22,7 @@ void bootblock_mainboard_early_init(void)
 
 	/* Power RAM in S3 */
 	pnp_set_logical_device(ACPI_DEV);
-	pnp_write_config(ACPI_DEV, 0xe4, 0x10);
+	pnp_write_config(ACPI_DEV, 0xe4, 0x1A); // ???
 
 	nuvoton_pnp_exit_conf_state(GLOBAL_DEV);
 

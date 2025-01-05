@@ -27,6 +27,7 @@ chip northbridge/intel/sandybridge
 						io  0x62 = 0x0064
 						irq 0x70 = 1
 						irq 0x72 = 12
+						drq 0xf0 = 0x82 # KBC 12Mhz/A20 speed/sw KBRST
 					end
 					device pnp 2e.6   off end	# CIR
 					device pnp 2e.7   off end	# GPIO6-8
@@ -40,7 +41,12 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.509 on  end	# GPIO5
 					device pnp 2e.609 off end	# GPIO6
 					device pnp 2e.709 off end	# GPIO7
-					device pnp 2e.a   on  end	# ACPI
+					device pnp 2e.a   on		# ACPI
+						drq 0xe3 = 0x04		# Thermal shutdown event issued
+						drq 0xe6 = 0x1c 	# Mouse wake-up???
+						drq 0xe7 = 0x11		# HWM reset by LRESET#, 0.5s S3 delay for compatibility
+						drq 0xf2 = 0x5d		# Enable RSTOUT[0-2]# and PME
+					end
 					device pnp 2e.b   on		# H/W Monitor, FP LED
 						io  0x60 = 0x0290
 						io  0x62 = 0

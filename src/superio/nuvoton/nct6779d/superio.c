@@ -1,21 +1,55 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
+#include <option.h>
 #include <superio/conf_mode.h>
 
 #include "nct6779d.h"
+
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
+#define MAINBOARD_POWER_KEEP	2
+
+#define NCT6779D_ACPI_POWER_LOSS_CONTROL_MASK	0x60
+#define NCT6779D_ACPI_POWER_LOSS_CONTROL_SHIFT	5
+#define NCT6779D_ACPI_POWER_ALWAYS_OFF		(0 << NCT6779D_ACPI_POWER_LOSS_CONTROL_SHIFT)
+#define NCT6779D_ACPI_POWER_ALWAYS_ON		(1 << NCT6779D_ACPI_POWER_LOSS_CONTROL_SHIFT)
+#define NCT6779D_ACPI_POWER_PREV_STATE		(2 << NCT6779D_ACPI_POWER_LOSS_CONTROL_SHIFT)
+#define NCT6779D_ACPI_POWER_USER_DEFINED	(3 << NCT6779D_ACPI_POWER_LOSS_CONTROL_SHIFT)
 
 static void nct6779d_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
 
+	uint8_t byte;
+	uint8_t power_status;
+
 	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case NCT6779D_KBC:
 		pc_keyboard_init(NO_AUX_DEVICE);
+		break;
+	// these are same as other nuvoton chips, but stay safe!
+	case NCT6779D_ACPI:
+		/* Set power state after power fail */
+		power_status = get_uint_option("power_on_after_fail",
+				CONFIG_MAINBOARD_POWER_FAILURE_STATE);
+		pnp_enter_conf_mode(dev);
+		pnp_set_logical_device(dev);
+		byte = pnp_read_config(dev, 0xe4);
+		byte &= ~NCT6779D_ACPI_POWER_LOSS_CONTROL_MASK;
+		if (power_status == MAINBOARD_POWER_ON)
+			byte |= NCT6779D_ACPI_POWER_ALWAYS_ON;
+		else if (power_status == MAINBOARD_POWER_KEEP)
+			byte |= NCT6779D_ACPI_POWER_PREV_STATE;
+		pnp_write_config(dev, 0xe4, byte);
+		pnp_exit_conf_mode(dev);
+		printk(BIOS_INFO, "set power %s after power fail\n",
+		       power_status ? "on" : "off");
 		break;
 	}
 }
