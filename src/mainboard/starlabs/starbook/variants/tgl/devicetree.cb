@@ -1,6 +1,7 @@
 chip soc/intel/tigerlake
 	# FSP UPDs
 	register "eist_enable"			= "true"
+	register "enable_c6dram"		= "1"
 	register "CnviBtCore"			= "true"
 	register "CnviBtAudioOffload"		= "1"
 	register "SaGv"				= "SaGv_Enabled"
@@ -20,6 +21,12 @@ chip soc/intel/tigerlake
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]		= PchSerialIoPci,
 		[PchSerialIoIndexI2C4]		= PchSerialIoSkipInit,
+	}"
+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed				= I2C_SPEED_FAST,
+		},
 	}"
 
 	register "SerialIoUartMode" = "{
@@ -49,7 +56,9 @@ chip soc/intel/tigerlake
 
 # Actual device tree.
 	device domain 0 on
-		device ref igpu		on  end
+		device ref igpu		on
+			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
+		end
 		device ref tbt_pcie_rp0	on  end
 		device ref gna		on  end
 		device ref crashlog	on  end
@@ -145,6 +154,9 @@ chip soc/intel/tigerlake
 						register "desc"		= ""Internal Bluetooth""
 						register "type"		= "UPC_TYPE_INTERNAL"
 						register "group"	= "ACPI_PLD_GROUP(0, 5)"
+						register "is_intel_bluetooth" = "1"
+						register "cnvi_bt_audio_offload" = "1"
+						register "enable_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(CNV_BTEN)"
 						device ref usb2_port10 on end
 					end
 				end
@@ -153,7 +165,8 @@ chip soc/intel/tigerlake
 		device ref shared_ram	on  end
 		device ref cnvi_wifi	on
 			chip drivers/wifi/generic
-				register "wake"			= "GPE0_PME_B0"
+				register "add_acpi_dma_property"	= "true"
+				register "enable_cnvi_ddr_rfim"		= "true"
 				device generic 0 on end
 			end
 		end
@@ -177,16 +190,26 @@ chip soc/intel/tigerlake
 		device ref i2c4		on  end
 		device ref uart2	on  end
 		device ref pcie_rp9	on
-			register "HybridStorageMode"		= "0"
-			register "PcieRpLtrEnable[8]"		= "1"
-			register "PcieClkSrcUsage[3]"		= "0x08"
-			register "PcieClkSrcClkReq[3]"		= "3"
-			register "PcieRpSlotImplemented[8]"	= "1"
-			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
+			register "HybridStorageMode"			= "0"
+			register "PcieRpLtrEnable[8]"			= "1"
+			register "PcieClkSrcUsage[3]"			= "0x08"
+			register "PcieClkSrcClkReq[3]"			= "3"
+			register "PcieRpSlotImplemented[8]"		= "1"
+
+			smbios_slot_desc				"SlotTypeM2Socket3"
+									"SlotLengthOther"
+									"M.2/M 2280"
+									"SlotDataBusWidth4X"
+
 			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
-				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
-				register "srcclk_pin"		= "3"
+				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
+				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
+				register "srcclk_pin"			= "3"
+				register "is_storage"			= "1"
+				register "add_acpi_dma_property"	= "1"
+				register "skip_on_off_support"		= "1"
+				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
+				register "use_rp_mutex"			= "1"
 				device generic 0 on end
 			end
 		end
@@ -201,7 +224,6 @@ chip soc/intel/tigerlake
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
-				device pnp 4e.00 on  end			# IO Interface
 				device pnp 4e.01 off end			# Com 1
 				device pnp 4e.02 off end			# Com 2
 				device pnp 4e.04 off end			# System Wake-Up

@@ -74,18 +74,19 @@ static const struct mt6685_key_setting key_protect_setting[] = {
 static void mt6685_unlock(bool unlock)
 {
 	for (int i = 0; i < ARRAY_SIZE(key_protect_setting); i++)
-		mt6685_write16(key_protect_setting[i].addr,
-			       unlock ? key_protect_setting[i].val : 0);
+		mt6685_write8(key_protect_setting[i].addr,
+			      unlock ? key_protect_setting[i].val : 0);
 }
 
 void mt6685_init_pmif_arb(void)
 {
-	if (!pmif_arb) {
-		pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_1);
-		assert(pmif_arb);
-	}
+	if (pmif_arb)
+		return;
 
-	if (pmif_arb->is_pmif_init_done(pmif_arb))
+	pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_1);
+	assert(pmif_arb);
+
+	if (pmif_arb->check_init_done(pmif_arb))
 		die("ERROR - Failed to initialize pmif spi");
 
 	printk(BIOS_INFO, "[%s]CHIP ID = %#x\n", __func__, mt6685_read_field(0xb, 0xFF, 0));

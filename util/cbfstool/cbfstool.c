@@ -352,11 +352,11 @@ static int decode_mmap_arg(char *arg)
 		return 1;
 
 	union {
-		unsigned long int array[3];
+		unsigned long array[3];
 		struct {
-			unsigned long int flash_base;
-			unsigned long int mmap_base;
-			unsigned long int mmap_size;
+			unsigned long flash_base;
+			unsigned long mmap_base;
+			unsigned long mmap_size;
 		};
 	} mmap_args;
 	char *suffix = NULL;
@@ -653,8 +653,10 @@ static int cbfs_add_integer_component(const char *name,
 	}
 
 	if (cbfs_get_entry(&image, name)) {
-		ERROR("'%s' already in ROM image.\n", name);
-		goto done;
+		if (cbfs_remove_entry(&image, name) != 0) {
+			ERROR("Removing file '%s' failed.\n", name);
+			goto done;
+		}
 	}
 
 	header = cbfs_create_file_header(CBFS_TYPE_RAW,
@@ -1968,16 +1970,12 @@ static void usage(char *name)
 	     "  -U               Unprocessed; don't decompress or make ELF\n"
 	     "  -v               Provide verbose output (-v=INFO -vv=DEBUG output)\n"
 	     "  -h               Display this help message\n\n"
-	     "  --ext-win-base   Base of extended decode window in host address\n"
-	     "                   space(x86 only)\n"
-	     "  --ext-win-size   Size of extended decode window in host address\n"
-	     "                   space(x86 only)\n"
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment] \\\n"
 	     "        [-p padding size] [-y|--xip if TYPE is FSP]       \\\n"
 	     "        [-j topswap-size] (Intel CPUs only) [--ibb]       \\\n"
-	     "        [--ext-win-base win-base --ext-win-size win-size]     "
+	     "        [--mmio flash-base:mmio-base:size]                    "
 			"Add a component\n"
 	     "                                                         "
 	     "    -j valid size: 0x10000 0x20000 0x40000 0x80000 0x100000 \n"
@@ -1990,7 +1988,7 @@ static void usage(char *name)
 	     "        [-S comma-separated-section(s)-to-ignore] \\\n"
 	     "        [-a alignment] [-Q|--pow2page] \\\n"
 	     "        [-y|--xip] [--ibb]                                \\\n"
-	     "        [--ext-win-base win-base --ext-win-size win-size]     "
+	     "        [--mmio flash-base:mmio-base:size]                    "
 			"Add a stage to the ROM\n"
 	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-A hash] -l load-address -e entry-point \\\n"

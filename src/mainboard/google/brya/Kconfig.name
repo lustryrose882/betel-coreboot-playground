@@ -38,6 +38,9 @@ config BOARD_GOOGLE_CONSTITUTION
 config BOARD_GOOGLE_CROTA
 	bool "->  Crota"
 
+config BOARD_GOOGLE_DIRKS
+	bool "->  Dirks"
+
 config BOARD_GOOGLE_DOCHI
 	bool "->  Dochi"
 
@@ -115,6 +118,9 @@ config BOARD_GOOGLE_PRIMUS
 
 config BOARD_GOOGLE_PUJJO
 	bool "->  Pujjo"
+
+config BOARD_GOOGLE_PUJJONIRU
+	bool "->  Pujjoniru"
 
 config BOARD_GOOGLE_QUANDISO
 	bool "->  Quandiso"

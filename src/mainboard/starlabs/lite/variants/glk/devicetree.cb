@@ -55,10 +55,13 @@ chip soc/intel/apollolake
 	register "slp_s3_assertion_width_usecs"	= "28000"
 
 	device domain 0 on
-		device ref igd		on  end
+		device ref igd		on
+			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
+		end
 		device ref cnvi		on
 			chip drivers/wifi/generic
-				register "wake" = "GPE0A_CNVI_PME_STS"
+				register "add_acpi_dma_property"	= "true"
+				register "enable_cnvi_ddr_rfim"		= "true"
 				device generic 0 on end
 			end
 		end
@@ -104,7 +107,6 @@ chip soc/intel/apollolake
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
-				device pnp 4e.00 on  end			# IO Interface
 				device pnp 4e.01 off end			# Com 1
 				device pnp 4e.02 off end			# Com 2
 				device pnp 4e.04 off end			# System Wake-Up

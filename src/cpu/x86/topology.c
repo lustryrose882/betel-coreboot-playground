@@ -110,12 +110,14 @@ void set_cpu_topology(struct device *cpu)
 	static struct bitfield_descriptor topology[LEVEL_TYPE_MAX];
 	static enum cb_err ret;
 	static bool done;
+	unsigned int core_id_within_package;
 	struct {
 		unsigned int level;
 		unsigned int *field;
 	} apic_fields[] = {
 		{ LEVEL_TYPE_SMT, &cpu->path.apic.thread_id },
 		{ LEVEL_TYPE_CORE, &cpu->path.apic.core_id },
+		{ LEVEL_TYPE_MODULE, &cpu->path.apic.module_id },
 		{ LEVEL_TYPE_PACKAGE, &cpu->path.apic.package_id },
 		{ LEVEL_TYPE_PACKAGE, &cpu->path.apic.node_id }
 	};
@@ -150,4 +152,8 @@ void set_cpu_topology(struct device *cpu)
 			*apic_fields[i].field = value;
 		}
 	}
+
+	core_id_within_package = apicid & ((1 << topology[LEVEL_TYPE_PACKAGE].first_bit) - 1);
+	core_id_within_package >>= topology[LEVEL_TYPE_CORE].first_bit;
+	cpu->path.apic.core_id_within_package = core_id_within_package;
 }

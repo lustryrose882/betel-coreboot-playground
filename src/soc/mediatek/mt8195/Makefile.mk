@@ -11,7 +11,7 @@ all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
 bootblock-y += ../common/early_init.c
-bootblock-y += ../common/eint_event.c
+bootblock-y += ../common/eint_event.c ../common/eint_event_info.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 bootblock-y += ../common/pll.c pll.c
@@ -50,6 +50,7 @@ ramstage-y += ../common/dfd.c
 ramstage-y += ../common/display.c
 ramstage-y += ../common/dpm_v1.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c
+ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_hal_common.c
 ramstage-y += ../common/dp/dp_intf.c ../common/dp/dptx.c ../common/dp/dptx_hal.c dp_intf.c
 ramstage-y += emi.c
 ramstage-y += hdmi.c

@@ -97,6 +97,14 @@ QEMU x86 PC <emulation/qemu-i440fx.md>
 QEMU POWER9 <emulation/qemu-power9.md>
 ```
 
+## Erying
+
+```{toctree}
+:maxdepth: 1
+
+Polestar G613 Pro <erying/tgl/tgl_matx.md>
+```
+
 ## Facebook
 
 ```{toctree}
@@ -336,6 +344,8 @@ StarLite Mk IV <starlabs/lite_glkr.md>
 StarLite Mk V <starlabs/lite_adl.md>
 StarBook Mk V <starlabs/starbook_tgl.md>
 StarBook Mk VI <starlabs/starbook_adl.md>
+StarBook Mk VII (N200) <starlabs/starbook_adl_n.md>
+StarBook Mk VII (165H) <starlabs/starbook_mtl.md>
 Byte Mk II <starlabs/byte_adl.md>
 StarFighter Mk I <starlabs/starfighter_rpl.md>
 
@@ -396,6 +406,13 @@ Serval Workstation 13 <system76/serw13.md>
 :maxdepth: 1
 
 Beaglebone Black <ti/beaglebone-black.md>
+```
+
+## Topton
+```{toctree}
+:maxdepth: 1
+
+X2F-N100 <topton/adl/x2f-n100.md>
 ```
 
 ## UP

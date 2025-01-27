@@ -10,7 +10,7 @@ all-y += timer.c ../common/timer_prepare.c
 all-y += ../common/uart.c
 
 bootblock-y += ../common/bootblock.c bootblock.c
-bootblock-y += ../common/eint_event.c
+bootblock-y += ../common/eint_event.c ../common/eint_event_info.c
 bootblock-y += ../common/lastbus_v2.c lastbus.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/tracker.c ../common/tracker_v2.c
@@ -39,6 +39,7 @@ ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
 ramstage-y += ../common/display.c
+ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_hal_common.c
 ramstage-y += ../common/dp/dp_intf.c ../common/dp/dptx.c ../common/dp/dptx_hal.c dp_intf.c
 ramstage-y += ../common/dpm_v1.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c

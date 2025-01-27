@@ -285,7 +285,10 @@ EMULATION MAINBOARDS
 S:	Orphan
 F:	src/mainboard/emulation/
 
-
+ERYING MAINBOARDS
+M:	Alicja Michalska <ahplka19@gmail.com>
+S:	Maintained
+F:	src/mainboard/erying/
 
 EXAMPLE MAINBOARDS
 S:	Orphan
@@ -353,7 +356,9 @@ F:	src/mainboard/google/brya/
 
 GOOGLE FATCAT MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
+M:	Kapil Porwal <kapilporwal@google.com>
 M:	Pranava Y N <pranavayn@google.com>
+M:	Jayvik Desai <jayvik@google.com>
 F:	src/mainboard/google/fatcat/
 
 GOOGLE HATCH MAINBOARDS
@@ -626,6 +631,7 @@ F:	src/mainboard/sifive/
 
 STAR LABS MAINBOARDS
 M:	Sean Rhodes <sean@starlabs.systems>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/starlabs/
 
@@ -649,6 +655,12 @@ F:	src/mainboard/system76/
 TI MAINBOARDS
 S:	Orphan
 F:	src/mainboard/ti/
+
+
+TOPTON MAINBOARDS
+M:	Alicja Michalska <ahplka19@gmail.com>
+S:	Maintained
+F:	src/mainboard/topton/
 
 
 
@@ -927,6 +939,7 @@ INTEL PANTHERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Pranava Y N <pranavayn@google.com>
+M:	Jayvik Desai <jayvik@google.com>
 S:	Maintained
 F:	src/soc/intel/pantherlake/
 

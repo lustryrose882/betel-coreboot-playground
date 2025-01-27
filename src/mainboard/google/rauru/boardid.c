@@ -38,7 +38,7 @@ static const unsigned int *adc_voltages[] = {
 
 static uint32_t get_adc_index(unsigned int channel)
 {
-	int value;
+	u32 value;
 
 	mt6363_sdmadc_read(channel, &value, SDMADC_OPEN, AUXADC_VAL_PROCESSED);
 	assert(channel < ARRAY_SIZE(adc_voltages));
@@ -64,21 +64,6 @@ uint32_t storage_id(void)
 
 	printk(BIOS_DEBUG, "Storage ID: %#02x\n", cached_storage_id);
 	return cached_storage_id;
-}
-
-enum ufs_type storage_type(uint32_t index)
-{
-	switch (index) {
-	case 0:
-		return UFS_40;
-	case 1:
-		return UFS_31;
-	case 2:
-		return UFS_40_HS;
-	default:
-		printk(BIOS_DEBUG, "unsupported type %d\n", index);
-	}
-	return UFS_UNKNOWN;
 }
 
 uint32_t sku_id(void)

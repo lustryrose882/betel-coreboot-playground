@@ -134,8 +134,12 @@ Scope (\_SB.PCI0.LPCB)
 		}
 
 		#include "ac.asl"
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
 		#include "battery.asl"
+#endif
+#if !CONFIG(EC_STARLABS_MERLIN)
 		#include "events.asl"
+#endif
 		#include "lid.asl"
 		#include "dock.asl"
 
@@ -147,10 +151,10 @@ Scope (\_SB.PCI0.LPCB)
 				ECAV = 0x01
 
 				// Initialise the Lid State
-				\LIDS = LSTE
+				\LIDS = ECRD(RefOf(LSTE))
 
 				// Initialise the OS State
-				OSFG = 0x01
+				ECWR(0x01, RefOf(OSFG))
 
 				// Initialise the Power State
 				PWRS = (ECRD (RefOf(ECPS)) & 0x01)

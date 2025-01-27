@@ -62,7 +62,7 @@ const struct pad_config gpio_table[] = {
 	/* A6:		Not Connected					*/
 	PAD_NC(GPP_A6, NONE),
 	/* A7:		Embedded Controller SCI				*/
-	PAD_CFG_GPI_SCI_LOW(GPP_A7, NONE, PLTRST, LEVEL),
+	PAD_NC(GPP_A7, NONE),
 	/* A8:		Not Connected					*/
 	PAD_NC(GPP_A8, NONE),
 	/* A9:		ESPI Clock					*/
@@ -72,7 +72,7 @@ const struct pad_config gpio_table[] = {
 	/* A12:		PCH M.2 SSD PEDET				*/
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A13:		BlueTooth RF Kill				*/
-	PAD_CFG_GPO(GPP_A13, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_A13, 1, DEEP, NONE),
 	/* A14:		Test Point 45					*/
 	PAD_NC(GPP_A14, NONE),
 	/* A15:		Test Point 52					*/
@@ -234,7 +234,7 @@ const struct pad_config gpio_table[] = {
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
 	/* D16:		PCH M.2 SSD Power Enable			*/
-PAD_CFG_GPO(GPP_D16, 1, PLTRST),
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Trackpad reset					*/
@@ -249,7 +249,7 @@ PAD_CFG_GPO(GPP_D16, 1, PLTRST),
 	/* E2:		Not Connected					*/
 	PAD_CFG_GPO(GPP_E2, 1, PLTRST),
 	/* E3:		WiFi RF Kill					*/
-	PAD_CFG_GPO(GPP_E3, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_E3, 1, DEEP, NONE),
 	/* E4:		Retimer Force Power				*/
 	PAD_CFG_GPO(GPP_E4, 0, PLTRST),
 	/* E5:		Not Connected					*/
@@ -259,7 +259,7 @@ PAD_CFG_GPO(GPP_D16, 1, PLTRST),
 				High:	Enabled				*/
 	PAD_CFG_GPO(GPP_E6, 0, DEEP),
 	/* E7:		Embedded Controller SMI				*/
-	PAD_CFG_GPI_SMI_LOW(GPP_E7, NONE, DEEP, EDGE_SINGLE),
+	PAD_NC(GPP_E7, NONE),
 	/* E8:		DRAM Sleep					*/
 	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF1),
 	/* E9:		USB OverCurrent 0				*/
@@ -279,15 +279,15 @@ PAD_CFG_GPO(GPP_D16, 1, PLTRST),
 	/* E16:		Not Connected					*/
 	PAD_NC(GPP_E16, NONE),
 	/* E17:		Not Connected					*/
-	PAD_CFG_GPO(GPP_E17, 1, PLTRST),
-	/* E18:		Thunderbolt LSX TXD				*/
-	PAD_NC(GPP_E18, NATIVE),
-	/* E19:		Thunderbolt LSX RXD				*/
-	PAD_NC(GPP_E19, NATIVE),
+	PAD_NC(GPP_E17, NONE),
+	/* E18:		TBT_LSX0_TXD					*/
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF2),
+	/* E19:		TBT_LSX0_RXD					*/
+	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF2),
 	/* E20:		TBT_LSX1_TXD					*/
-	PAD_NC(GPP_E20, NONE),
+	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF4),
 	/* E21:		TBT_LSX1_RXD					*/
-	PAD_NC(GPP_E21, NONE),
+	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF4),
 	/* E22:		Not Connected					*/
 	PAD_NC(GPP_E22, NONE),
 	/* E23:		Not Connected					*/

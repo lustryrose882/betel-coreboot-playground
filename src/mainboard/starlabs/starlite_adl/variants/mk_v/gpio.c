@@ -27,11 +27,11 @@ const struct pad_config gpio_table[] = {
 	/* GPD3:	Power Button					*/
 	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),
 	/* GPD4:	Sleep S3					*/
-	PAD_CFG_NF(GPD4, NONE, DEEP, NF1),
+	PAD_NC(GPD4, NONE),
 	/* GPD5:	Sleep S4					*/
-	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),
+	PAD_NC(GPD5, NONE),
 	/* GPD6:	Sleep A						*/
-	PAD_CFG_NF(GPD6, NONE, DEEP, NF1),
+	PAD_NC(GPD6, NONE),
 	/* GPD7:	Power Adapter Disable				*/
 	PAD_CFG_GPO(GPD7, 0, PWROK),
 	/* GPD8:	Suspend Clock					*/
@@ -39,9 +39,9 @@ const struct pad_config gpio_table[] = {
 	/* GPD9:	Wireless LAN Sleep				*/
 	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),
 	/* GPD10:	Sleep S5					*/
-	PAD_CFG_NF(GPD10, NONE, DEEP, NF1),
+	PAD_NC(GPD10, NONE),
 	/* GPD11:	LAN PHY Enable					*/
-	PAD_CFG_GPO(GPD11, 0, PWROK),
+	PAD_NC(GPD11, NONE),
 
 	/* A0:		ESPI IO 0					*/
 	/* A1:		ESPI IO 1					*/
@@ -63,13 +63,13 @@ const struct pad_config gpio_table[] = {
 	/* A12:		PCH M.2 SSD PEDET				*/
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A13:		BlueTooth RF Kill				*/
-	PAD_CFG_GPO(GPP_A13, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_A13, 1, DEEP, NONE),
 	/* A14:		Camera Power Enable				*/
 	PAD_NC(GPP_A14, NONE),
 	/* A15:		Camera Reset					*/
 	PAD_NC(GPP_A15, NONE),
 	/* A16:		USB OverCurrent 3				*/
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+	PAD_NC(GPP_A16, NONE),
 	/* A17:		Not Connected					*/
 	PAD_NC(GPP_A17, NONE),
 	/* A18:		DDI B DP HPD					*/
@@ -111,7 +111,7 @@ const struct pad_config gpio_table[] = {
 	/* B11:		I2C PMC PD Interrupt	Test Point 28		*/
 	PAD_NC(GPP_B11, NONE),
 	/* B12:		PM SLP S0					*/
-	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
+	PAD_NC(GPP_B12, NONE),
 	/* B13:		PLT RST						*/
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* B14:		Webcam Privacy LED				*/
@@ -148,7 +148,7 @@ const struct pad_config gpio_table[] = {
 	/* C2:		TLS Confidentiality	Weak Internal PD 20K
 				Low:	Disabled
 				High:	Enabled				*/
-	PAD_CFG_GPO(GPP_C2, 0, DEEP),
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),
 	/* C3:		SML 0 Clock					*/
 	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
 	/* C4:		SML 0 Data					*/
@@ -242,7 +242,7 @@ const struct pad_config gpio_table[] = {
 	/* E2:		Not Connected					*/
 	PAD_NC(GPP_E2, NONE),
 	/* E3:		WiFi RF Kill					*/
-	PAD_CFG_GPO(GPP_E3, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_E3, 1, DEEP, NONE),
 	/* E4:		P Offset					*/
 	PAD_NC(GPP_E4, NONE),
 	/* E5:		P Out						*/
@@ -254,9 +254,9 @@ const struct pad_config gpio_table[] = {
 	/* E7:		Embedded Controller SMI				*/
 	PAD_NC(GPP_E7, NONE),
 	/* E8:		DRAM Sleep					*/
-	PAD_NC(GPP_E8, NONE),
+	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF2),
 	/* E9:		USB OverCurrent 0				*/
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	PAD_NC(GPP_E9, NONE),
 	/* E10:		PWD Amplifier Input				*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		TPM IRQ						*/
@@ -296,8 +296,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1),
 	/* F4:		CNV RF Reset					*/
 	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
-	/* F5:		Not used		MODEM_CLKREQ		*/
-	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),
+	/* F5:		MODEM_CLKREQ					*/
+	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF1),
 	/* F6:		CNV PA Blanking					*/
 	PAD_NC(GPP_F6, NONE),
 	/* F7:		TBT LSX VCCIO		Weak Internal PD 20K
@@ -323,7 +323,7 @@ const struct pad_config gpio_table[] = {
 	/* F16:		Not Connected					*/
 	PAD_NC(GPP_F16, NONE),
 	/* F17:		Touch Panel Reset				*/
-	PAD_CFG_GPO(GPP_F17, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_F17, 1, DEEP, NONE),
 	/* F18:		Touch Panel Interrupt				*/
 	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* F19:		Not Connected					*/
@@ -448,6 +448,27 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_R6, NONE),
 	/* R7:		Not Connected					*/
 	PAD_NC(GPP_R7, NONE),
+
+	/* BT_EN */
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_VGPIO_0, 1, DEEP, NONE),
+
+	/* CNVi BT UART0 */
+	PAD_NC(GPP_VGPIO_6, NONE),
+	PAD_NC(GPP_VGPIO_7, NONE),
+	PAD_NC(GPP_VGPIO_8, NONE),
+	PAD_NC(GPP_VGPIO_9, NONE),
+
+	/* CNVi UART0 */
+	PAD_NC(GPP_VGPIO_18, NONE),
+	PAD_NC(GPP_VGPIO_19, NONE),
+	PAD_NC(GPP_VGPIO_20, NONE),
+	PAD_NC(GPP_VGPIO_21, NONE),
+
+	/* BT I2S */
+	PAD_CFG_NF(GPP_VGPIO_30, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_VGPIO_31, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_VGPIO_32, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_VGPIO_33, NONE, DEEP, NF3),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

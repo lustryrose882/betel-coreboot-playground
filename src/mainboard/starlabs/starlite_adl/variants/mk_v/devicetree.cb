@@ -2,6 +2,7 @@ chip soc/intel/alderlake
 	# FSP UPDs
 	register "cnvi_bt_audio_offload"	= "true"
 	register "cnvi_bt_core"			= "true"
+	register "enable_c6dram"		= "true"
 	register "eist_enable"			= "true"
 	register "sagv"				= "SaGv_Enabled"
 
@@ -9,6 +10,15 @@ chip soc/intel/alderlake
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]		= PchSerialIoPci,
 		[PchSerialIoIndexI2C2]		= PchSerialIoPci,
+	}"
+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed				= I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed				= I2C_SPEED_FAST,
+		}
 	}"
 
 	register "serial_io_uart_mode" = "{
@@ -31,53 +41,53 @@ chip soc/intel/alderlake
 			register "gfx"					= "GMA_DEFAULT_PANEL(0)"
 			register "ddi_portA_config"			= "1"
 			register "ddi_ports_config" = "{
+				[DDI_PORT_A]				= DDI_ENABLE_HPD,
 				[DDI_PORT_B]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_1]				= DDI_ENABLE_HPD,
+				[DDI_PORT_2]				= DDI_ENABLE_HPD,
 			}"
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Top USB 3.0 Type-C
-			register "usb2_ports[0]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Bottom USB 3.0 Type-C				3289 mil
+			register "usb2_ports[0]"			= "USB2_PORT_SHORT(OC_SKIP)"
 			register "usb3_ports[2]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Bottom USB 3.0 Type-C
-			register "usb2_ports[1]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Top USB 3.0 Type-C				4237 mil
+			register "usb2_ports[1]"			= "USB2_PORT_SHORT(OC_SKIP)"
 			register "usb3_ports[0]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Detachable Keyboard + SD Card Reader
-			register "usb2_ports[2]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Detachable Keyboard + SD Card Reader		6418 mil
+			register "usb2_ports[2]"			= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Internal Webcam
-			register "usb2_ports[CONFIG_CCD_PORT]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Camera + Webcam				3249 mil
+			register "usb2_ports[CONFIG_CCD_PORT]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Camera
-			register "usb2_ports[5]"			= "USB2_PORT_MID(OC_SKIP)"
-
-			# Internal Bluetooth
-			register "usb2_ports[9]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Internal Bluetooth				1874 mil
+			register "usb2_ports[9]"			= "USB2_PORT_SHORT(OC_SKIP)"
 
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc"		= ""Top USB Type-C""
+						register "desc"		= ""Bottom USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Top USB Type-C""
+						register "desc"		= ""Bottom USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb3_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Bottom USB Type-C""
+						register "desc"		= ""Top USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Bottom USB Type-C""
+						register "desc"		= ""Top USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb3_port1 on end
@@ -89,20 +99,17 @@ chip soc/intel/alderlake
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Internal Webcam""
-						register "type"		= "UPC_TYPE_INTERNAL"
-						register "group"	= "ACPI_PLD_GROUP(0, 3)"
-						device ref usb2_port5 on end
-					end
-					chip drivers/usb/acpi
-						register "desc"		= ""Camera""
-						register "type"		= "UPC_TYPE_INTERNAL"
+						register "desc"		= ""USB 2.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
 						register "group"	= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""CNVi Bluetooth""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "is_intel_bluetooth" = "1"
+						register "cnvi_bt_audio_offload" = "1"
+						register "enable_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_VGPIO_0)"
 						register "reset_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
 						register "group"	= "ACPI_PLD_GROUP(0, 5)"
 						device ref usb2_port10 on end
@@ -113,10 +120,8 @@ chip soc/intel/alderlake
 		device ref shared_sram	on  end
 		device ref cnvi_wifi	on
 			chip drivers/wifi/generic
-				register "wake"				= "GPE0_PME_B0"
 				register "add_acpi_dma_property"	= "true"
 				register "enable_cnvi_ddr_rfim"		= "true"
-				use usb2_port10 as bluetooth_companion
 				device generic 0 on end
 			end
 		end
@@ -138,7 +143,7 @@ chip soc/intel/alderlake
 				register "generic.desc"			= ""Touchscreen""
 				register "generic.irq"			= "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
 				register "generic.reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"
-				register "generic.reset_delay_ms"	= "10"
+				register "generic.reset_delay_ms"	= "300"
 				register "generic.has_power_resource"	= "1"
 				register "hid_desc_reg_offset"		= "0x01"
 				device i2c 5d on end
@@ -149,6 +154,9 @@ chip soc/intel/alderlake
 				.clk_src				= 0,
 				.clk_req				= 0,
 				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
+				.pcie_rp_detect_timeout_ms		= 50,
 			}"
 
 			smbios_slot_desc				"SlotTypeM2Socket3"
@@ -159,6 +167,11 @@ chip soc/intel/alderlake
 				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
 				register "srcclk_pin"			= "0"
+				register "is_storage"			= "1"
+				register "add_acpi_dma_property"	= "1"
+				register "skip_on_off_support"		= "1"
+				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
+				register "use_rp_mutex"			= "1"
 				device generic 0 on end
 			end
 		end
@@ -170,7 +183,6 @@ chip soc/intel/alderlake
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
-				device pnp 4e.00 on  end			# IO Interface
 				device pnp 4e.01 off end			# Com 1
 				device pnp 4e.02 off end			# Com 2
 				device pnp 4e.04 off end			# System Wake-Up

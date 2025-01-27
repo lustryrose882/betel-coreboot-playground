@@ -2,6 +2,7 @@
 
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
+#include <fsp/debug.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -248,12 +249,23 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 				   const struct soc_intel_pantherlake_config *config)
 {
+	m_cfg->CpuCrashLogEnable = CONFIG(SOC_INTEL_CRASHLOG);
+
 	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_TRACEHUB))
 		return;
 
 	m_cfg->PlatformDebugOption = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
-	m_cfg->CpuCrashLogEnable = CONFIG(SOC_INTEL_CRASHLOG);
-	m_cfg->DciEn = 1;
+
+	switch (CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT) {
+	case HW_DEBUG_TRACEHUB_ACTIVE:
+	case HW_DEBUG_TRACEHUB_READY:
+	case HW_DEBUG_TRACEHUB_POWEROFF:
+		m_cfg->DciEn = 1;
+		break;
+	case HW_DEBUG_DISABLE:
+		m_cfg->DciEn = 0;
+		break;
+	}
 }
 
 static void fill_fspm_thermal_params(FSP_M_CONFIG *m_cfg,
@@ -296,24 +308,36 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_params[i](m_cfg, config);
 }
 
+static void fsp_set_debug_level(FSP_M_CONFIG *m_cfg,
+	 enum fsp_log_level fsp_pcd_log_level, enum fsp_log_level fsp_mrc_log_level)
+{
+	/* Set Serial debug message level */
+	m_cfg->PcdSerialDebugLevel = fsp_pcd_log_level;
+	/* Set MRC debug level */
+	m_cfg->SerialDebugMrcLevel = fsp_mrc_log_level;
+}
+
 static void fsp_control_log_level(FSPM_UPD *mupd, bool is_enabled)
 {
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSPM_ARCHx_UPD *arch_upd = &mupd->FspmArchUpd;
 
-	if (is_enabled) {
-		enum fsp_log_level log_level = fsp_map_console_log_level();
-		arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
-		/* Set Serial debug message level */
-		m_cfg->PcdSerialDebugLevel = log_level;
-		/* Set MRC debug level */
-		m_cfg->SerialDebugMrcLevel = log_level;
-	} else {
-		/* Disable Serial debug message */
-		m_cfg->PcdSerialDebugLevel = 0;
-		/* Disable MRC debug message */
-		m_cfg->SerialDebugMrcLevel = 0;
+	enum fsp_log_level fsp_log_level = is_enabled ? fsp_get_pcd_debug_log_level() :
+			 FSP_LOG_LEVEL_DISABLE;
+	enum fsp_log_level mrc_log_level = is_enabled ? fsp_get_mrc_debug_log_level() :
+			 FSP_LOG_LEVEL_DISABLE;
+
+	fsp_set_debug_level(m_cfg, fsp_log_level, mrc_log_level);
+
+	if ((m_cfg->PcdSerialDebugLevel > FSP_LOG_LEVEL_VERBOSE) ||
+	    (m_cfg->SerialDebugMrcLevel > FSP_LOG_LEVEL_VERBOSE)) {
+		printk(BIOS_ERR, "Invalid FSP log level\n");
+		return;
 	}
+
+	/* Set Event Handler if log-level is non-zero */
+	if (m_cfg->PcdSerialDebugLevel || m_cfg->SerialDebugMrcLevel)
+		arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
 }
 
 static void fill_fsp_event_handler(FSPM_UPD *mupd)

@@ -46,10 +46,22 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EN_SPKR.id, ACTIVE_LOW, -1, "speaker reset"},
 	};
 
+	struct lb_gpio alc5645_gpios[] = {
+		{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
+	};
+
 	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_TAS2563)))
 		lb_add_gpios(gpios, smartamp_gpios, ARRAY_SIZE(smartamp_gpios));
+	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
+		lb_add_gpios(gpios, alc5645_gpios, ARRAY_SIZE(alc5645_gpios));
 	else
 		lb_add_gpios(gpios, nau8318_gpios, ARRAY_SIZE(nau8318_gpios));
+
+	struct lb_gpio edp_pwm_backlight_gpios[] = {
+		{GPIO_BL_PWM_1V8.id, ACTIVE_HIGH, -1, "PWM control"},
+		{GPIO_AP_EDP_BKLTEN.id, ACTIVE_HIGH, -1, "backlight enable"},
+	};
+	lb_add_gpios(gpios, edp_pwm_backlight_gpios, ARRAY_SIZE(edp_pwm_backlight_gpios));
 }
 
 int cr50_plat_irq_status(void)
