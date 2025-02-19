@@ -75,6 +75,7 @@ ramstage-y += ../common/mt6685.c mt6685.c
 ramstage-y += mt6685_rtc.c
 ramstage-y += mtcmos.c
 ramstage-y += ../common/mtk_fsp.c
+ramstage-y += pi_image.c
 ramstage-y += soc.c
 ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c sspm_sram.c
@@ -92,11 +93,18 @@ CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 
 MT8196_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8196
 
+BL31_LIB := $(top)/$(MT8196_BLOB_DIR)/libbl31.a
+
+ifneq ($(wildcard $(BL31_LIB)),)
+BL31_MAKEARGS += MTKLIB_PATH=$(BL31_LIB)
+endif
+
 mcu-firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
 	$(CONFIG_GPUEB_FIRMWARE) \
 	$(CONFIG_MCUPM_FIRMWARE) \
+	$(CONFIG_PI_IMG_FIRMWARE) \
 	$(CONFIG_SSPM_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE)
 

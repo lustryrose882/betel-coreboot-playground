@@ -656,8 +656,9 @@ void pmc_gpe_init(void)
 	 * Route the GPIOs to the GPE0 block. Determine that all values
 	 * are different, and if they aren't use the reset values.
 	 */
-	if (dw0 == dw1 || dw1 == dw2) {
-		printk(BIOS_INFO, "PMC: Using default GPE route.\n");
+	if (dw0 == dw1 || dw1 == dw2 || dw0 == dw2) {
+		printk(BIOS_WARNING, "PMC: Duplicate GPE DW register values detected; "
+		       "using default GPE route from MISCCFG register\n");
 		gpio_cfg = read32p(pmc_bar + GPIO_GPE_CFG);
 
 		dw0 = (gpio_cfg >> GPE0_DW_SHIFT(0)) & GPE0_DWX_MASK;

@@ -97,12 +97,14 @@ static const struct sm_object gna = SM_DECLARE_BOOL({
 });
 #endif
 
+#if !CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
 	.opt_name	= "hyper_threading",
 	.ui_name	= "Hyper-Threading",
 	.ui_helptext	= "Enable or disable Hyper-Threading",
 	.default_value	= true,
 });
+#endif
 
 static const struct sm_object kbl_timeout = SM_DECLARE_ENUM({
 	.opt_name	= "kbl_timeout",
@@ -198,7 +200,7 @@ static const struct sm_object pci_hot_plug = SM_DECLARE_BOOL({
 });
 #endif
 
-#if CONFIG(SOC_INTEL_ALDERLAKE)
+#if CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_METEORLAKE)
 static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 	.opt_name	= "pciexp_aspm",
 	.ui_name	= "PCI ASPM",
@@ -291,7 +293,9 @@ static struct sm_obj_form processor = {
 	.obj_list = (const struct sm_object *[]) {
 		&me_state,
 		&me_state_counter,
+		#if !CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 		&hyper_threading,
+		#endif
 		&vtd,
 		NULL
 	},
@@ -347,7 +351,7 @@ static struct sm_obj_form pci = {
 		#if CONFIG(BOARD_STARLABS_STARBOOK_ADL)
 		&pci_hot_plug,
 		#endif
-		#if CONFIG(SOC_INTEL_ALDERLAKE)
+		#if CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_METEORLAKE)
 		&pciexp_clk_pm,
 		&pciexp_aspm,
 		&pciexp_l1ss,

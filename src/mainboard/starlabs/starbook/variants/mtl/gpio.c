@@ -57,7 +57,7 @@ const struct pad_config gpio_table[] = {
 	/* V13					*/
 	PAD_NC(GPP_V13, NONE),
 	/* V14:	WAKE_N				*/
-	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),
+	PAD_NC(GPP_V14, NONE),
 	/* V15:					*/
 	PAD_NC(GPP_V15, NONE),
 	/* V16:					*/
@@ -202,6 +202,7 @@ const struct pad_config gpio_table[] = {
 	/* E03:					*/
 	PAD_NC(GPP_E03, NONE),
 	/* E04:	M.2_SSD_DEVSLP0			*/
+	PAD_NC(GPP_E04, NONE),
 	/* E05:					*/
 	PAD_NC(GPP_E05, NONE),
 	/* E06:	JTAG ODT
@@ -248,14 +249,14 @@ const struct pad_config gpio_table[] = {
 	 * End:		GPP_H23
 	 */
 	/* H00:	M.2_PCH_SSD_RESET_N		*/
-	PAD_CFG_GPO(GPP_H00, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H00, 1, PLTRST, NONE),
 	/* H01:	FLASH RECOVERY
 	 *		HIGH:	ENABLED
 	 *		LOW:	DISABLED
 	 *		WEAK INTERNAL PD 20K	*/
 	PAD_NC(GPP_H01, NONE),
 	/* H02:	WLAN_RST_N			*/
-	PAD_CFG_GPO(GPP_H02, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H02, 1, PLTRST, NONE),
 	/* H03:					*/
 	PAD_NC(GPP_H03, NONE),
 	/* H04:					*/
@@ -265,7 +266,7 @@ const struct pad_config gpio_table[] = {
 	/* H06:					*/
 	PAD_NC(GPP_H06, NONE),
 	/* H07:	M.2_CPU_SSD_PWREN		*/
-	PAD_CFG_GPO(GPP_H07, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H07, 1, DEEP, NONE),
 	/* H08:					*/
 	PAD_NC(GPP_H08, NONE),
 	/* H09:					*/
@@ -305,17 +306,17 @@ const struct pad_config gpio_table[] = {
 	 * End:		GPP_F23
 	 */
 	/* F00:	CNV_BRI_DT			*/
-	PAD_CFG_NF(GPP_F00, NONE, DEEP, NF1),
+	PAD_NC(GPP_F00, NONE),
 	/* F01:	CNV_BRI_RSP			*/
-	PAD_CFG_NF(GPP_F01, UP_20K, DEEP, NF1),
+	PAD_NC(GPP_F01, NONE),
 	/* F02:	CNV_RGI_DT			*/
-	PAD_CFG_NF(GPP_F02, NONE, DEEP, NF1),
+	PAD_NC(GPP_F02, NONE),
 	/* F03:	CNV_RGI_RSP			*/
-	PAD_CFG_NF(GPP_F03, UP_20K, DEEP, NF1),
+	PAD_NC(GPP_F03, NONE),
 	/* F04:	CNVI_RF_RESET_N			*/
-	PAD_CFG_NF(GPP_F00, NONE, DEEP, NF1),
+	PAD_NC(GPP_F00, NONE),
 	/* F05:	MODEM_CLKREQ			*/
-	PAD_CFG_NF(GPP_F00, NONE, DEEP, NF3),
+	PAD_NC(GPP_F00, NONE),
 	/* F06:					*/
 	PAD_NC(GPP_F06, NONE),
 	/* F07:					*/
@@ -331,7 +332,7 @@ const struct pad_config gpio_table[] = {
 	/* F12:					*/
 	PAD_NC(GPP_F12, NONE),
 	/* F13:	TPM_IRQ				*/
-	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
+	PAD_CFG_GPI_APIC_LOW(GPP_F13, NONE, PLTRST),
 	/* F14:					*/
 	PAD_NC(GPP_F14, NONE),
 	/* F15:					*/

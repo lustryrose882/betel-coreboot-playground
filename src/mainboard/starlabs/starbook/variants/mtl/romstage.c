@@ -9,6 +9,11 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	const struct mb_cfg mem_config = {
 		.type = MEM_TYPE_DDR5,
+		.ect = false,
+		.UserBd = BOARD_TYPE_MOBILE,
+		.ddr_config = {
+			.dq_pins_interleaved = false,
+		}
 	};
 
 	const bool half_populated = false;
@@ -34,5 +39,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	if (get_uint_option("wireless", 1) == 0)
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 8);
 
-	mupd->FspmConfig.PchHdaSubSystemIds = 0x14f1035e;
+	mupd->FspmConfig.PchHdaSubSystemIds = 0x70381e50;
 };

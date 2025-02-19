@@ -26,10 +26,6 @@ chip soc/intel/alderlake
 	register "pch_slp_sus_min_assertion_width"	= "3"			# 500ms
 	register "pch_slp_a_min_assertion_width"	= "3"			# 2s
 
-	register "pmc_gpe0_dw0"				= "PMC_GPP_F"
-	register "pmc_gpe0_dw1"				= "PMC_GPP_C"
-	register "pmc_gpe0_dw2"				= "PMC_GPP_E"
-
 	# Device Tree
 	device domain 0 on
 		device ref igpu		on
@@ -170,7 +166,7 @@ chip soc/intel/alderlake
 									"M.2/M 2230"
 									"SlotDataBusWidth1X"
 			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
+				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
 				register "srcclk_pin"			= "1"
 				register "add_acpi_dma_property"	= "true"

@@ -222,13 +222,13 @@ const struct pad_config gpio_table[] = {
 	/* D12:		GSPI 2 MOSI FPS					*/
 	PAD_NC(GPP_D12, NONE),
 	/* D13:		Wireless LAN Wake				*/
-	PAD_CFG_GPO(GPP_D13, 1, PLTRST),
+	PAD_NC(GPP_D13, NONE),
 	/* D14:		CPU M.2 SSD Power Enable			*/
 	PAD_NC(GPP_D14, NONE),
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
 	/* D16:		PCH M.2 SSD Power Enable			*/
-	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_D16, 1, DEEP, NONE),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Not Connected					*/
@@ -261,7 +261,7 @@ const struct pad_config gpio_table[] = {
 	/* E10:		PWD Amplifier Input				*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		TPM IRQ						*/
-	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
+	PAD_CFG_GPI_APIC_LOW(GPP_E11, NONE, PLTRST),
 	/* E12:		Touchpad Interrupt				*/
 	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),
 	/* E13:		Not connected					*/
@@ -339,11 +339,11 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F23, NONE),
 
 	/* H0:		PCH M.2 SSD Reset				*/
-	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H0, 1, PLTRST, NONE),
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H2:		Wireless LAN Reset				*/
-	PAD_CFG_GPO(GPP_H2, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H2, 1, PLTRST, NONE),
 	/* H3:		Not Connected					*/
 	PAD_NC(GPP_H3, NONE),
 	/* H4:		I2C 0 SDA		Touchpad		*/

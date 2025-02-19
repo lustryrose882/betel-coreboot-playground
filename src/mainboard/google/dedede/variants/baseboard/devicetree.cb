@@ -129,7 +129,7 @@ chip soc/intel/jasperlake
 	register "PcieClkSrcClkReq[5]" = "5"
 
 	# Audio related configurations
-	register "PchHdaDspEnable" = "1"
+	register "PchHdaDspEnable" = "true"
 	register "PchHdaAudioLinkHdaEnable" = "1"
 	register "PchHdaAudioLinkSspEnable[0]" = "1"
 	register "PchHdaAudioLinkSspEnable[1]" = "1"
@@ -159,7 +159,7 @@ chip soc/intel/jasperlake
 	register "DdiPortCDdc" = "1"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# Power limit config
 	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
